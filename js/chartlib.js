@@ -1,3 +1,96 @@
+// Cash Conversion Cycle
+
+// DPO			 CCC
+// 23			   7
+// ######### #######
+// ####### #########
+// 10		      20
+// DIO 			 DSO
+
+function cccChart(obj) {
+
+	var widthMax = obj.data[0].width + obj.padding + obj.data[1].width;
+
+	var spacing = 40;
+
+	var widthScale = d3.scale.linear()
+		.domain([0, widthMax])
+		.rangeRound([obj.padding, obj.containerWidth-obj.padding*2])
+		;
+
+	var title = obj.container
+		.append("text")
+		.attr("x", obj.padding)
+		.attr("y", obj.padding)
+		.attr("font-size", 12)
+		.attr("font-weight", "bold")
+		.attr("font-family", "Helvetica")
+		.text(obj.name)
+		;
+
+	var dpo_label = obj.container
+		.append("text")
+		.attr("x", obj.padding)
+		.attr("y", obj.padding*3)
+		.attr("font-size", 12)
+		.attr("font-weight", "bold")
+		.attr("font-family", "Helvetica")
+		.text(obj.data[0].label)
+		;
+
+	var dpo_value = obj.container
+		.append("text")
+		.attr("x", obj.padding)
+		.attr("y", obj.padding*4.5)
+		.attr("font-size", 12)
+		.attr("font-weight", "bold")
+		.attr("font-family", "Helvetica")
+		.text(obj.data[0].width)
+		;
+
+	var upper_bar = obj.container
+		.append("rect")
+		.attr("x", obj.padding)
+		.attr("y", obj.padding+spacing)
+		.attr("width", widthScale(widthMax))
+		.attr("height", obj.barHeight)
+		;
+
+	var upper_divider = obj.container
+		.append("rect")
+		.attr("x", obj.containerWidth/2-obj.padding)
+		.attr("y", obj.padding+spacing)
+		.attr("width", obj.padding*2)
+		.attr("height", obj.barHeight)
+		.attr("fill", "#ffffff")		
+		 .transition()
+		  .duration(500)
+			.attr("x", widthScale(obj.data[0].width))
+		;
+
+	var lower_bar = obj.container
+		.append("rect")
+		.attr("x", obj.padding)
+		.attr("y", obj.padding*3+spacing)
+		.attr("width", widthScale(widthMax))
+		.attr("height", obj.barHeight)
+		;
+
+	var lower_divider = obj.container
+		.append("rect")
+		.attr("x", obj.containerWidth/2-obj.padding)
+		.attr("y", obj.padding*3+spacing)
+		.attr("width", obj.padding*2)
+		.attr("height", obj.barHeight)
+		.attr("fill", "#ffffff")		
+		 .transition()
+		  .duration(500)
+			.attr("x", widthScale(obj.data[2].width))
+		;
+}
+
+
+
 function bubble(obj) {
 	var data = obj.data;
 	
