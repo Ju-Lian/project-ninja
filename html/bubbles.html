@@ -8,7 +8,10 @@
 				background-color: #fff;
 			}
 			.bubble{
-				fill:#777;
+				fill:#000;
+			}
+			.fruits{
+				fill: #999;
 			}
 			.bubble:hover{
 				fill: orange;
@@ -36,8 +39,8 @@
 
 	<body>
 		<script>
-			var width = 500,
-				height = 500;
+			var width = 600,
+				height = 600;
 			
 		
 			var svg = d3.select("body").append("svg")
@@ -58,29 +61,34 @@
 				showValues: true,
 				showLabels: true,
 				showMatrix: true,
+				cluster: ["fruits","vegetables"],
 				data: [{
 							y: 30,
 							x: 20,
 							r: 20,
-							label: "Apple"
+							label: "Apple",
+							cluster: "fruits"
 						},
 						{
 							y: 83,
 							x: 30,
 							r: 40,
-							label: "Bananas"
+							label: "Bananas",
+							cluster: "fruits"
 						},
 						{
 							y: 40,
 							x: 130,
 							r: 60,
-							label: "Cherry"
+							label: "Cherry",
+							cluster: "fruits"
 						},
 						{
 							y: 80,
 							x: 80,
 							r: 10,
-							label: "Pear"
+							label: "Olive",
+							cluster: "vegetables"
 						}
 						]
 			});

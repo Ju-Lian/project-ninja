@@ -73,6 +73,26 @@ function bubble(obj) {
 		.attr("x",-80)
 		.text(split[i]);
 	}
+	
+	if(obj.cluster){
+		
+		var keys = obj.svg.append("g")
+		var key = keys.selectAll("circle")
+			.data(obj.cluster)
+			.enter().append("circle")
+			.attr("class",function(d){return d})
+			.attr("cx", obj.width-obj.padding+20)
+			.attr("cy", function(d,i){return obj.padding+20*(i+1)})
+			.attr("r", 8);
+		keys.selectAll("text")
+			.data(obj.cluster)
+			.enter().append("text")
+			.attr("class","axis label")
+			.attr("x", obj.width-obj.padding+35)
+			.attr("y", function(d,i){return obj.padding+20*(i+1)+5})
+			.text(function(d){return d;});
+		
+	}
 
 	//Circles	
 		
@@ -84,7 +104,7 @@ function bubble(obj) {
 		.append("circle");
 		
 	circles
-		.attr("class", "bubble")
+		.attr("class", function (d) {if(d.cluster){return "bubble " + d.cluster}else{return "bubble"}})
 		.attr("cx", function(d){return xScale(d.x)})
 		.attr("cy", function(d){return yScale(d.y)})
 		.attr("r", 0);
