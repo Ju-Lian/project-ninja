@@ -5,22 +5,37 @@
 		
 		<style>
 			svg{
-				background-color: #ccc;
+				background-color: #fff;
 			}
-			.bar{
+			.bar:hover{
+				fill: orange;
 			}
 			.green{
-				fill: green;
+				fill: #999;
 			}
 			.red{
 				fill: red;
+			}
+			.sum{
+				fill: #333;
+			}
+			.sumLabel{
+				font-weight: bold;
 			}
 			.title{
 				font-family: arial;
 			}
 			.zeroLine{
-				fill: red;
-				stroke: black;
+				stroke: #999;
+			}
+			
+			.barConnector{
+				stroke: #333;
+				stroke-width:1;
+			}
+			.values{
+				font-family:arial;
+				font-size: 12px;
 			}
 		</style>
 	</head>
@@ -40,13 +55,17 @@
 				svg: svg,
 				width: width,
 				height: height,
-				name: "myWaterfall",
+				name: "GuV",
 				css: "bar",
+				padding: 40,
 				barHeight: 20,
 				barPadding: 10,
 				showTitle: true,
 				showZeroLine: true,
-				data: [-10,-20,80,-40, 100]
+				showConnectors: true,
+				showValues: true,
+				showSum: true,
+				data: [10,20,-20,70]
 			});
 		</script>
 	</body>

@@ -109,7 +109,7 @@ function waterfall(obj) {
 	var helper = data[0];
 	var titleHeight = 0;
 	
-	//scale to fit canvas size
+	//Find min and max
 	for (var i = 0; i < data.length; i++)
 	{
 		if (i < data.length -1){
@@ -128,9 +128,13 @@ function waterfall(obj) {
 		}
 	}
 	
-	var scale = (obj.width-60) / Math.abs(max-min);
-	var zeroX = Math.abs(min)*scale+30;
-	var offset = zeroX;
+	
+	var xScale = d3.scale.linear()
+		.domain([min, max])
+		.rangeRound([obj.padding, obj.width-obj.padding]);		
+	
+	var x0 = xScale(0);
+	var offset = 0;
 	
 	//show title
 	if(obj.showTitle){
@@ -144,68 +148,66 @@ function waterfall(obj) {
 				.attr("y", 20);
 	}
 	
-	//draw zero line	
+	//zero line	
 	if(obj.showZeroLine){
 		g.selectAll(".zeroLine")
 		.data([10])
 			.enter().append("line")
 				.attr("class", "zeroLine")
-				.attr("x1", zeroX)
-				.attr("x2", zeroX)
+				.attr("x1", x0)
+				.attr("x2", x0)
 				.attr("y1", titleHeight)
 				.attr("y2", obj.height);
 	}
 
-	//draw bars
+	//bars
 	var rect = g.selectAll("rect")
 	.data(data)
 		.enter()
 		.append("rect");
 		
 	rect
-		.attr("x", function(d) {if(d>0){offset = offset + d*scale; return offset -d*scale;}else{return offset = offset + d*scale;}})
+		.attr("x", function(d) {if(d<0){offset = offset + d; return xScale(offset)}else{offset = offset + d; return xScale(offset-d)}})
 		.attr("width",0)
 		.attr("title","placeholder");
 	rect
 		.transition()
 		.duration(500)
 		.attr("y", function(d,i) {return titleHeight + obj.barHeight*i + obj.barPadding*i;})
-		.attr("width", function(d){return Math.abs(d) * scale;})
+		.attr("width", function(d){return xScale(Math.abs(d))-xScale(0);})
 		.attr("height", obj.barHeight)
 		.attr("class", function(d){if(d>0){return obj.css + " "+"green";}else{return obj.css + " "+"red";}});
 	
 	
-	//draw sum line
+	//sum line
 	if(obj.showSum){
-	
 		var sum = 0;
-		
 		for (var i in data) {
 			sum = sum + data[i];
 		}
 	
 		g.data([sum])
 			.append("rect")
-			.attr("x", zeroX)
+			.attr("x", function(d){if(d>0){return x0}else{return xScale(0)-(xScale(Math.abs(d))-xScale(0))}})
 			.attr("y", titleHeight + data.length*obj.barHeight+data.length*obj.barPadding)
 			.attr("width", 0)
 			.transition()
 			.duration(500)
-			.attr("width", function(d){return d*scale})
+			.attr("width", function(d){return xScale(Math.abs(d))-xScale(0)})
 			.attr("height", obj.barHeight)
 			.attr("class", obj.css + " sum");
 		
 		if(obj.showValues){		
 			g.data([sum])
 				.append("text")
-				.attr("x", function(d){if(d>0){return zeroX+d*scale+5}else{return (d+"").length*7}})
+				.attr("x", function(d){if(d>0){return x0+xScale(d)-xScale(0)+5}else{return xScale(0)-(xScale(Math.abs(d))-xScale(0))-(d+"").length*7}})
 				.attr("y", titleHeight + data.length*obj.barHeight+data.length*obj.barPadding+obj.barHeight/2+5)
 				.attr("class", "values sumLabel")
 				.text(sum);
 			}
 	}
 	
-	//draw Connectors
+	//connectors
 	if(obj.showConnectors){
 		
 		var data2 = new Array();
@@ -215,28 +217,25 @@ function waterfall(obj) {
 		if(!obj.showSum){
 			data2.pop();
 		}
-		
-		offset = zeroX;
-		offset2 = zeroX;
+		offset = 0;
+		offset2 = 0;
 		g.selectAll(".barConnector")
 		.data(data2)
 			.enter().append("line")
 			.attr("class", "barConnector")
-			.attr("x1", function(d) {if(d>0){return offset = offset + d*scale;}else{return offset = offset + d*scale;}})
-			.attr("x2", function(d) {if(d>0){return offset2 = offset2 + d*scale;}else{return offset2 = offset2 + d*scale;}})
+			.attr("x1", function(d) {offset = offset + d; return xScale(offset)})
+			.attr("x2", function(d) {offset2 = offset2 + d; return xScale(offset2)})
 			.attr("y1", function(d,i) {return titleHeight + obj.barHeight*(i+1) + obj.barPadding*i;})
 			.attr("y2", function(d,i) {return titleHeight + obj.barHeight*(i+1) + obj.barPadding*(i+1);});
 	}
-	
-	//draw bar connections
-	
+	//value labels
 	if(obj.showValues){
-		offset = zeroX;
+		offset = x0;
 		g.selectAll(".label")
 		.data(data)
 			.enter().append("text")
 			.attr("class", "values")
-			.attr("x", function(d){if(d>0){offset = offset + d*scale; return offset+5}else{offset = offset + d*scale; return offset-(d+"").length*7}})
+			.attr("x", function(d){if(d>0){offset = offset + xScale(d)-xScale(0); return offset+5}else{offset = offset - (xScale(Math.abs(d))-xScale(0)); return offset-(d+"").length*7}})
 			.attr("y", function(d,i) {return titleHeight + obj.barHeight*i + obj.barPadding*i + obj.barHeight/2+5;})
 			.text(function(d) { return d;});
 	}
