@@ -1,0 +1,53 @@
+<html>
+	<head>
+		<script src="../js/d3.v3.min.js"></script>
+		<script src="../js/chartlib.js"></script>
+		
+		<style>
+			svg{
+				background-color: #ccc;
+			}
+			.bar{
+			}
+			.green{
+				fill: green;
+			}
+			.red{
+				fill: red;
+			}
+			.title{
+				font-family: arial;
+			}
+			.zeroLine{
+				fill: red;
+				stroke: black;
+			}
+		</style>
+	</head>
+
+	<body>
+		<script>
+			var width = 200,
+				height = 200;
+			
+		
+			var svg = d3.select("body").append("svg")
+				.attr("width", width)
+				.attr("height", height);	
+				
+			waterfall
+			({
+				svg: svg,
+				width: width,
+				height: height,
+				name: "myWaterfall",
+				css: "bar",
+				barHeight: 20,
+				barPadding: 10,
+				showTitle: true,
+				showZeroLine: true,
+				data: [-10,-20,80,-40, 100]
+			});
+		</script>
+	</body>
+</html>
