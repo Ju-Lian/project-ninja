@@ -4,13 +4,16 @@ function bubble(obj) {
 	var xMax = d3.max(data, function(d) { return d.x; });
 	var yMax = d3.max(data, function(d) { return d.y; })
 	
+	xMax = xMax + obj.innerPadding;
+	yMax = yMax + obj.innerPadding;
+	
 	//Scale
 	var xScale = d3.scale.linear()
-		.domain([0, xMax+obj.padding])
+		.domain([0, xMax])
 		.rangeRound([obj.padding, obj.width-obj.padding]);
 					
 	var yScale = d3.scale.linear()
-		.domain([yMax+obj.padding, 0])
+		.domain([yMax, 0])
 		.rangeRound([obj.padding, obj.height-obj.padding]);
 		
 	var rScale = d3.scale.linear()
@@ -20,14 +23,15 @@ function bubble(obj) {
 	var xAxis = d3.svg.axis()
                   .scale(xScale)
                   .orient("bottom")
-				  .tickValues([0,(xMax+obj.padding)/2,xMax+obj.padding])
-				  .tickSize(-obj.height+obj.padding*2);
+				  .tickValues([0,(xMax)/2,xMax])
+				  //.tickSize(-obj.height+obj.padding*2);
+				  .tickSize(10);
 				  
 	if(obj.xCustom){
 		xAxis.tickFormat(function(d, i) {return obj.xCustom[i]});
 	}
 				  
-	obj.svg.append("g")
+	var x = obj.svg.append("g")
 		.attr("class","axis")
 		.attr("transform", "translate(0," + (obj.height - obj.padding) + ")")
 		.call(xAxis);
@@ -35,17 +39,24 @@ function bubble(obj) {
 	var yAxis = d3.svg.axis()
                   .scale(yScale)
                   .orient("left")
-				  .tickValues([0,(yMax+obj.padding)/2,yMax+obj.padding])
-				  .tickSize(-obj.width+obj.padding*2);
+				  .tickValues([0,(yMax)/2,yMax])
+				  .tickSize(10);
 				  
 	if(obj.yCustom){
 		yAxis.tickFormat(function(d, i) {return obj.yCustom[i]});
 	}
 				  
-	obj.svg.append("g")
+	y = obj.svg.append("g")
 		.attr("class","axis")
 		.attr("transform", "translate(" + obj.padding + ",0)")
 		.call(yAxis);
+		
+	if(obj.showMatrix){
+		x.selectAll("line")
+		.attr("y1",-obj.height+obj.padding*2);
+		y.selectAll("line")
+		.attr("x1",obj.width-obj.padding*2);
+	}
 
 	//Circles	
 		
@@ -196,7 +207,6 @@ function waterfall(obj) {
 	
 	//draw Connectors
 	if(obj.showConnectors){
-		
 		
 		var data2 = new Array();
 		for (var i in data) {
