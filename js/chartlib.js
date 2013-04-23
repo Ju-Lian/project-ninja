@@ -24,7 +24,6 @@ function bubble(obj) {
                   .scale(xScale)
                   .orient("bottom")
 				  .tickValues([0,(xMax)/2,xMax])
-				  //.tickSize(-obj.height+obj.padding*2);
 				  .tickSize(10);
 				  
 	if(obj.xCustom){
@@ -56,6 +55,23 @@ function bubble(obj) {
 		.attr("y1",-obj.height+obj.padding*2);
 		y.selectAll("line")
 		.attr("x1",obj.width-obj.padding*2);
+	}
+	
+	if(obj.xLabel){
+		x.append("text")
+		.attr("x",obj.width/2-obj.xLabel.length*3)
+		.attr("y",50)
+		.text(obj.xLabel);
+	}
+	
+	if(obj.yLabel){
+		var split = obj.yLabel.split(" ");
+		var text = y.append("text")
+		for (var i = 0; i < split.length; i++)
+		text.append("tspan")
+		.attr("y", obj.height/2+(i-1)*15)
+		.attr("x",-80)
+		.text(split[i]);
 	}
 
 	//Circles	
