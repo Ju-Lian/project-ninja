@@ -36,8 +36,8 @@
 
 	<body>
 		<script>
-			var width = 400,
-				height = 400;
+			var width = 500,
+				height = 500;
 			
 		
 			var svg = d3.select("body").append("svg")
@@ -50,8 +50,9 @@
 				width: width,
 				height: height,
 				xCustom: ["low","medium","high"], //customzied axis labels instead of values
-				yCustom: [":(","alright",":D"], //customzied axis labels instead of values
-				padding: 50,
+				xLabel: "Market attractiveness",
+				yLabel: "Relative market share",
+				padding: 100,
 				innerPadding: 20,
 				name: "myBubble",
 				showValues: true,
@@ -64,7 +65,7 @@
 							label: "Apple"
 						},
 						{
-							y: 80,
+							y: 83,
 							x: 30,
 							r: 40,
 							label: "Bananas"
@@ -73,7 +74,13 @@
 							y: 40,
 							x: 130,
 							r: 60,
-							label: "Cherries"
+							label: "Cherry"
+						},
+						{
+							y: 80,
+							x: 80,
+							r: 10,
+							label: "Pear"
 						}
 						]
 			});
