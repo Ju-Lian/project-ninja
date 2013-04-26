@@ -158,13 +158,16 @@ function bubble(obj) {
 	var xMax = d3.max(data, function(d) { return d.x; });
 	var yMax = d3.max(data, function(d) { return d.y; })
 	
+	xMax = xMax + obj.innerPadding;
+	yMax = yMax + obj.innerPadding;
+	
 	//Scale
 	var xScale = d3.scale.linear()
-		.domain([0, xMax+obj.padding])
+		.domain([0, xMax])
 		.rangeRound([obj.padding, obj.width-obj.padding]);
 					
 	var yScale = d3.scale.linear()
-		.domain([yMax+obj.padding, 0])
+		.domain([yMax, 0])
 		.rangeRound([obj.padding, obj.height-obj.padding]);
 		
 	var rScale = d3.scale.linear()
@@ -174,14 +177,14 @@ function bubble(obj) {
 	var xAxis = d3.svg.axis()
                   .scale(xScale)
                   .orient("bottom")
-				  .tickValues([0,(xMax+obj.padding)/2,xMax+obj.padding])
-				  .tickSize(-obj.height+obj.padding*2);
+				  .tickValues([0,(xMax)/2,xMax])
+				  .tickSize(10);
 				  
 	if(obj.xCustom){
 		xAxis.tickFormat(function(d, i) {return obj.xCustom[i]});
 	}
 				  
-	obj.svg.append("g")
+	var x = obj.svg.append("g")
 		.attr("class","axis")
 		.attr("transform", "translate(0," + (obj.height - obj.padding) + ")")
 		.call(xAxis);
@@ -189,17 +192,61 @@ function bubble(obj) {
 	var yAxis = d3.svg.axis()
                   .scale(yScale)
                   .orient("left")
-				  .tickValues([0,(yMax+obj.padding)/2,yMax+obj.padding])
-				  .tickSize(-obj.width+obj.padding*2);
+				  .tickValues([0,(yMax)/2,yMax])
+				  .tickSize(10);
 				  
 	if(obj.yCustom){
 		yAxis.tickFormat(function(d, i) {return obj.yCustom[i]});
 	}
 				  
-	obj.svg.append("g")
+	y = obj.svg.append("g")
 		.attr("class","axis")
 		.attr("transform", "translate(" + obj.padding + ",0)")
 		.call(yAxis);
+		
+	if(obj.showMatrix){
+		x.selectAll("line")
+		.attr("y1",-obj.height+obj.padding*2);
+		y.selectAll("line")
+		.attr("x1",obj.width-obj.padding*2);
+	}
+	
+	if(obj.xLabel){
+		x.append("text")
+		.attr("x",obj.width/2-obj.xLabel.length*3)
+		.attr("y",50)
+		.text(obj.xLabel);
+	}
+	
+	if(obj.yLabel){
+		var split = obj.yLabel.split(" ");
+		var text = y.append("text")
+		for (var i = 0; i < split.length; i++)
+		text.append("tspan")
+		.attr("y", obj.height/2+(i-1)*15)
+		.attr("x",-80)
+		.text(split[i]);
+	}
+	
+	if(obj.cluster){
+		
+		var keys = obj.svg.append("g")
+		var key = keys.selectAll("circle")
+			.data(obj.cluster)
+			.enter().append("circle")
+			.attr("class",function(d){return d})
+			.attr("cx", obj.width-obj.padding+20)
+			.attr("cy", function(d,i){return obj.padding+20*(i+1)})
+			.attr("r", 8);
+		keys.selectAll("text")
+			.data(obj.cluster)
+			.enter().append("text")
+			.attr("class","axis label")
+			.attr("x", obj.width-obj.padding+35)
+			.attr("y", function(d,i){return obj.padding+20*(i+1)+5})
+			.text(function(d){return d;});
+		
+	}
 
 	//Circles	
 		
@@ -211,7 +258,7 @@ function bubble(obj) {
 		.append("circle");
 		
 	circles
-		.attr("class", "bubble")
+		.attr("class", function (d) {if(d.cluster){return "bubble " + d.cluster}else{return "bubble"}})
 		.attr("cx", function(d){return xScale(d.x)})
 		.attr("cy", function(d){return yScale(d.y)})
 		.attr("r", 0);
@@ -252,7 +299,7 @@ function waterfall(obj) {
 	var helper = data[0];
 	var titleHeight = 0;
 	
-	//scale to fit canvas size
+	//Find min and max
 	for (var i = 0; i < data.length; i++)
 	{
 		if (i < data.length -1){
@@ -271,9 +318,13 @@ function waterfall(obj) {
 		}
 	}
 	
-	var scale = (obj.width-60) / Math.abs(max-min);
-	var zeroX = Math.abs(min)*scale+30;
-	var offset = zeroX;
+	
+	var xScale = d3.scale.linear()
+		.domain([min, max])
+		.rangeRound([obj.padding, obj.width-obj.padding]);		
+	
+	var x0 = xScale(0);
+	var offset = 0;
 	
 	//show title
 	if(obj.showTitle){
@@ -287,70 +338,67 @@ function waterfall(obj) {
 				.attr("y", 20);
 	}
 	
-	//draw zero line	
+	//zero line	
 	if(obj.showZeroLine){
 		g.selectAll(".zeroLine")
 		.data([10])
 			.enter().append("line")
 				.attr("class", "zeroLine")
-				.attr("x1", zeroX)
-				.attr("x2", zeroX)
+				.attr("x1", x0)
+				.attr("x2", x0)
 				.attr("y1", titleHeight)
 				.attr("y2", obj.height);
 	}
 
-	//draw bars
+	//bars
 	var rect = g.selectAll("rect")
 	.data(data)
 		.enter()
 		.append("rect");
 		
 	rect
-		.attr("x", function(d) {if(d>0){offset = offset + d*scale; return offset -d*scale;}else{return offset = offset + d*scale;}})
+		.attr("x", function(d) {if(d<0){offset = offset + d; return xScale(offset)}else{offset = offset + d; return xScale(offset-d)}})
 		.attr("width",0)
 		.attr("title","placeholder");
 	rect
 		.transition()
 		.duration(500)
 		.attr("y", function(d,i) {return titleHeight + obj.barHeight*i + obj.barPadding*i;})
-		.attr("width", function(d){return Math.abs(d) * scale;})
+		.attr("width", function(d){return xScale(Math.abs(d))-xScale(0);})
 		.attr("height", obj.barHeight)
 		.attr("class", function(d){if(d>0){return obj.css + " "+"green";}else{return obj.css + " "+"red";}});
 	
 	
-	//draw sum line
+	//sum line
 	if(obj.showSum){
-	
 		var sum = 0;
-		
 		for (var i in data) {
 			sum = sum + data[i];
 		}
 	
 		g.data([sum])
 			.append("rect")
-			.attr("x", zeroX)
+			.attr("x", function(d){if(d>0){return x0}else{return xScale(0)-(xScale(Math.abs(d))-xScale(0))}})
 			.attr("y", titleHeight + data.length*obj.barHeight+data.length*obj.barPadding)
 			.attr("width", 0)
 			.transition()
 			.duration(500)
-			.attr("width", function(d){return d*scale})
+			.attr("width", function(d){return xScale(Math.abs(d))-xScale(0)})
 			.attr("height", obj.barHeight)
 			.attr("class", obj.css + " sum");
 		
 		if(obj.showValues){		
 			g.data([sum])
 				.append("text")
-				.attr("x", function(d){if(d>0){return zeroX+d*scale+5}else{return (d+"").length*7}})
+				.attr("x", function(d){if(d>0){return x0+xScale(d)-xScale(0)+5}else{return xScale(0)-(xScale(Math.abs(d))-xScale(0))-(d+"").length*7}})
 				.attr("y", titleHeight + data.length*obj.barHeight+data.length*obj.barPadding+obj.barHeight/2+5)
 				.attr("class", "values sumLabel")
 				.text(sum);
 			}
 	}
 	
-	//draw Connectors
+	//connectors
 	if(obj.showConnectors){
-		
 		
 		var data2 = new Array();
 		for (var i in data) {
@@ -359,28 +407,25 @@ function waterfall(obj) {
 		if(!obj.showSum){
 			data2.pop();
 		}
-		
-		offset = zeroX;
-		offset2 = zeroX;
+		offset = 0;
+		offset2 = 0;
 		g.selectAll(".barConnector")
 		.data(data2)
 			.enter().append("line")
 			.attr("class", "barConnector")
-			.attr("x1", function(d) {if(d>0){return offset = offset + d*scale;}else{return offset = offset + d*scale;}})
-			.attr("x2", function(d) {if(d>0){return offset2 = offset2 + d*scale;}else{return offset2 = offset2 + d*scale;}})
+			.attr("x1", function(d) {offset = offset + d; return xScale(offset)})
+			.attr("x2", function(d) {offset2 = offset2 + d; return xScale(offset2)})
 			.attr("y1", function(d,i) {return titleHeight + obj.barHeight*(i+1) + obj.barPadding*i;})
 			.attr("y2", function(d,i) {return titleHeight + obj.barHeight*(i+1) + obj.barPadding*(i+1);});
 	}
-	
-	//draw bar connections
-	
+	//value labels
 	if(obj.showValues){
-		offset = zeroX;
+		offset = x0;
 		g.selectAll(".label")
 		.data(data)
 			.enter().append("text")
 			.attr("class", "values")
-			.attr("x", function(d){if(d>0){offset = offset + d*scale; return offset+5}else{offset = offset + d*scale; return offset-(d+"").length*7}})
+			.attr("x", function(d){if(d>0){offset = offset + xScale(d)-xScale(0); return offset+5}else{offset = offset - (xScale(Math.abs(d))-xScale(0)); return offset-(d+"").length*7}})
 			.attr("y", function(d,i) {return titleHeight + obj.barHeight*i + obj.barPadding*i + obj.barHeight/2+5;})
 			.text(function(d) { return d;});
 	}
