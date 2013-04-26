@@ -1,3 +1,23 @@
+//Random value
+
+//Get random values for testing
+
+function getRandom(min, max) {
+
+	if(min > max) { return -1; }
+								 
+	if(min == max) { return min; }
+								 
+	var r;
+								 
+	do { r = Math.random(); }
+	while(r == 1.0);
+									
+	return min + parseInt(r * (max-min+1));
+
+}
+
+
 // Cash Conversion Cycle
 
 // DPO			 CCC
@@ -112,65 +132,22 @@ function cccChart2(obj) {
 		.text(obj.name)
 		;
 
-	var dpo_label = obj.container
-		.append("text")
-		.attr("x", obj.padding)
-		.attr("y", obj.padding*3)
-		.attr("font-size", 12)
-		.attr("font-weight", "bold")
-		.attr("font-family", "Helvetica")
-		.text(obj.data[0].label)
-		;
+	var prev = 0;
 
-	var dpo_value = obj.container
-		.append("text")
-		.attr("x", obj.padding)
-		.attr("y", obj.padding*4.5)
-		.attr("font-size", 12)
-		.attr("font-weight", "bold")
-		.attr("font-family", "Helvetica")
-		.text(obj.data[0].width)
-		;
+	var dpo_bar = obj.container
+		.selectAll("rect")
+		 .data(obj.data)
+		  .enter().append("rect")
+		   .attr("x", function(d){
+						prev
+		   				return obj.padding + prev;
+						})
+		   .attr("y", obj.padding+spacing)
+		   .attr("width", function(d){ 
 
-	var upper_bar = obj.container
-		.append("rect")
-		.attr("x", obj.padding)
-		.attr("y", obj.padding+spacing)
-		.attr("width", widthScale(widthMax))
-		.attr("height", obj.barHeight)
-		;
-
-	var upper_divider = obj.container
-		.data(obj.data)
-		.append("rect")
-		.attr("x", obj.containerWidth/2-obj.padding)
-		.attr("y", obj.padding+spacing)
-		.attr("width", obj.padding*2)
-		.attr("height", obj.barHeight)
-		.attr("fill", "#ffffff")		
-		 .transition()
-		  .duration(500)
-			.attr("x", widthScale(obj.data[0].width))
-		;
-
-	var lower_bar = obj.container
-		.append("rect")
-		.attr("x", obj.padding)
-		.attr("y", obj.padding*3+spacing)
-		.attr("width", widthScale(widthMax))
-		.attr("height", obj.barHeight)
-		;
-
-	var lower_divider = obj.container
-		.append("rect")
-		.attr("x", obj.containerWidth/2-obj.padding)
-		.attr("y", obj.padding*3+spacing)
-		.attr("width", obj.padding*2)
-		.attr("height", obj.barHeight)
-		.attr("fill", "#ffffff")		
-		 .transition()
-		  .duration(500)
-			.attr("x", widthScale(obj.data[2].width))
+		   					return d.width; 
+		   				})
+		   .attr("height", obj.barHeight)
 		;
 }
 

@@ -37,25 +37,6 @@
 	<body>
 		<script>
 
-			function getRandom(min, max) {
-				if(min > max) {
-					return -1;
-				}
-				 
-				if(min == max) {
-					return min;
-				}
-				 
-				var r;
-				 
-				do {
-					r = Math.random();
-				}
-				while(r == 1.0);
-					return min + parseInt(r * (max-min+1));
-
-				}
-
 			var width = 200,
 				height = 100;
 
@@ -63,7 +44,6 @@
 				dio = getRandom(8, 12),
 				dso = getRandom(18, 26),
 				ccc = dso + dio - dpo;
-			
 		
 			var svg = d3.select("body").append("svg")
 				.attr("width", width)
@@ -78,22 +58,21 @@
 				barHeight: 15,
 				padding: 10,
 				data: [{
-							width: dpo,
-							label: "DPO"
+							label: "DPO",
+							width: dpo
 						},
 						{
-							width: ccc,
-							label: "CCC"
+							label: "CCC",
+							width: ccc
 						},
 						{
-							width: dio,
-							label: "DIO"
+							label: "DIO",
+							width: dio
 						},
 						{
-							width: dso,
-							label: "DSO"
-						}
-					   ]
+							label: "DSO",
+							width: dso
+						}]
 			});
 			
 		</script>
