@@ -132,8 +132,8 @@ function cccChart2(obj) {
 	var spacing = 40;
 
 	var widthScale = d3.scale.linear()
-		.domain([0, widthMax])
-		.rangeRound([obj.padding, obj.containerWidth-obj.padding*2])
+		.domain([0, 50])
+		.range([obj.padding, obj.containerWidth - obj.padding])
 		;
 
 	var title = obj.container
@@ -147,24 +147,58 @@ function cccChart2(obj) {
 		;
 
 
-
-	var dpo_bar = obj.container
+	var bars = obj.container
 		.selectAll("rect")
 		 .data(obj.data)
 		  .enter().append("rect")
-		   .attr("x", function(d){
-						prev
-		   				return obj.padding + prev;
+		   .attr("x", function(d,i){
+		   				if(i==0 || i==2){var helper = obj.padding;}
+		   				if(i==1 || i==3){var helper = 2*obj.padding + (obj.containerWidth - 3 * obj.padding) * obj.data[i-1].width / (obj.data[i].width + obj.data[i-1].width);}
+		   				return helper;
 						})
-		   .attr("y", obj.padding+spacing)
-		   .attr("width", function(d){ 
-
-		   					return d.width; 
+		   .attr("y", function(d,i){
+		   				if(i==0 || i==1){var helper = spacing + obj.padding;}
+		   				if(i==2 || i==3){var helper = spacing + obj.padding + obj.barHeight + obj.padding/2;}
+		   				return helper;
+						})
+		   .attr("width", function(d, i){ 
+		   				if(i==0 || i==2){var helper = (obj.containerWidth - 3 * obj.padding) * obj.data[i].width / (obj.data[i].width + obj.data[i+1].width);}
+		   				if(i==1 || i==3){var helper = (obj.containerWidth - 3 * obj.padding) * obj.data[i].width / (obj.data[i].width + obj.data[i-1].width);}
+		   				return helper; 
 		   				})
 		   .attr("height", obj.barHeight)
+		   .attr("fill", function(d){
+		   				return d.fill;
+		   				})
 		;
+
+/*
+	var bars = obj.container
+		.selectAll("rect")
+		 .data(obj.data)
+		  .enter().append("rect")
+		   .attr("x", function(d,i){
+		   				if(i==0 || i==2){var helper = obj.padding;}
+		   				if(i==1 || i==3){var helper = obj.padding + widthScale(obj.data[i-1].width) + obj.padding;}
+		   				return helper;
+						})
+		   .attr("y", function(d,i){
+		   				if(i==0 || i==1){var helper = spacing + obj.padding;}
+		   				if(i==2 || i==3){var helper = spacing + obj.padding + obj.barHeight + obj.padding/2;}
+		   				return helper;
+						})
+		   .attr("width", function(d){ 
+		   				return widthScale(d.width); 
+		   				})
+		   .attr("height", obj.barHeight)
+		   .attr("fill", function(d){
+		   				return d.fill;
+		   				})
+		;
+*/
 }
 
+//Bubble Chart
 
 function bubble(obj) {
 	var data = obj.data;
