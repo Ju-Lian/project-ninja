@@ -14,7 +14,7 @@
 
 //Random value
 
-//Get random values for testing
+//Get some random values for testing
 
 function getRandom(min, max) {
 
@@ -43,109 +43,9 @@ function getRandom(min, max) {
 
 function cccChart(obj) {
 
-	var widthMax = obj.data[0].width + obj.padding + obj.data[1].width;
-
 	var spacing = 40;
 
-	var widthScale = d3.scale.linear()
-		.domain([0, widthMax])
-		.rangeRound([obj.padding, obj.containerWidth-obj.padding*2])
-		;
-
-	var title = obj.container
-		.append("text")
-		.attr("x", obj.padding)
-		.attr("y", obj.padding)
-		.attr("font-size", 12)
-		.attr("font-weight", "bold")
-		.attr("font-family", "Helvetica")
-		.text(obj.name)
-		;
-
-	var dpo_label = obj.container
-		.append("text")
-		.attr("x", obj.padding)
-		.attr("y", obj.padding*3)
-		.attr("font-size", 12)
-		.attr("font-weight", "bold")
-		.attr("font-family", "Helvetica")
-		.text(obj.data[0].label)
-		;
-
-	var dpo_value = obj.container
-		.append("text")
-		.attr("x", obj.padding)
-		.attr("y", obj.padding*4.5)
-		.attr("font-size", 12)
-		.attr("font-weight", "bold")
-		.attr("font-family", "Helvetica")
-		.text(obj.data[0].width)
-		;
-
-	var upper_bar = obj.container
-		.append("rect")
-		.attr("x", obj.padding)
-		.attr("y", obj.padding+spacing)
-		.attr("width", widthScale(widthMax))
-		.attr("height", obj.barHeight)
-		;
-
-	var upper_divider = obj.container
-		.data(obj.data)
-		.append("rect")
-		.attr("x", obj.containerWidth/2-obj.padding)
-		.attr("y", obj.padding+spacing)
-		.attr("width", obj.padding*2)
-		.attr("height", obj.barHeight)
-		.attr("fill", "#ffffff")		
-		 .transition()
-		  .duration(500)
-			.attr("x", widthScale(obj.data[0].width))
-		;
-
-	var lower_bar = obj.container
-		.append("rect")
-		.attr("x", obj.padding)
-		.attr("y", obj.padding*3+spacing)
-		.attr("width", widthScale(widthMax))
-		.attr("height", obj.barHeight)
-		;
-
-	var lower_divider = obj.container
-		.append("rect")
-		.attr("x", obj.containerWidth/2-obj.padding)
-		.attr("y", obj.padding*3+spacing)
-		.attr("width", obj.padding*2)
-		.attr("height", obj.barHeight)
-		.attr("fill", "#ffffff")		
-		 .transition()
-		  .duration(500)
-			.attr("x", widthScale(obj.data[2].width))
-		;
-}
-
-
-function cccChart2(obj) {
-
-	var widthMax = obj.data[0].width + obj.padding + obj.data[1].width;
-
-	var spacing = 40;
-
-	var widthScale = d3.scale.linear()
-		.domain([0, 50])
-		.range([obj.padding, obj.containerWidth - obj.padding])
-		;
-
-	var title = obj.container
-		.append("text")
-		.attr("x", obj.padding)
-		.attr("y", obj.padding)
-		.attr("font-size", 12)
-		.attr("font-weight", "bold")
-		.attr("font-family", "Helvetica")
-		.text(obj.name)
-		;
-
+	//Draw the 4 bars
 
 	var bars = obj.container
 		.selectAll("rect")
@@ -172,30 +72,66 @@ function cccChart2(obj) {
 		   				})
 		;
 
-/*
-	var bars = obj.container
-		.selectAll("rect")
+	//Write the bar labels
+
+	var labels = obj.container
+		.selectAll(".barlabels")
 		 .data(obj.data)
-		  .enter().append("rect")
-		   .attr("x", function(d,i){
+		  .enter().append("text")
+		   	.attr("class","barlabels")
+		   	.attr("x", function(d,i){
 		   				if(i==0 || i==2){var helper = obj.padding;}
-		   				if(i==1 || i==3){var helper = obj.padding + widthScale(obj.data[i-1].width) + obj.padding;}
+		   				if(i==1 || i==3){var helper = obj.containerWidth - obj.padding;}
 		   				return helper;
 						})
-		   .attr("y", function(d,i){
-		   				if(i==0 || i==1){var helper = spacing + obj.padding;}
-		   				if(i==2 || i==3){var helper = spacing + obj.padding + obj.barHeight + obj.padding/2;}
+		   	.attr("y", function(d,i){
+		   				if(i==0 || i==1){var helper = spacing - obj.padding;}
+		   				if(i==2 || i==3){var helper = spacing + obj.padding + 2*obj.barHeight + obj.padding/2 +29;}
 		   				return helper;
 						})
-		   .attr("width", function(d){ 
-		   				return widthScale(d.width); 
-		   				})
-		   .attr("height", obj.barHeight)
-		   .attr("fill", function(d){
-		   				return d.fill;
-		   				})
+		   	.text(function(d){ return d.label; })
+			.attr("text-anchor", function(d,i){
+		   				if(i==0 || i==2){var helper = "start";}
+		   				if(i==1 || i==3){var helper = "end";}
+		   				return helper;
+						})
+	;
+
+	//Write the bar values
+
+	var values = obj.container
+		.selectAll(".barvalues")
+		 .data(obj.data)
+		  .enter().append("text")
+		   	.attr("class","barvalues")
+		   	.attr("x", function(d,i){
+		   				if(i==0 || i==2){var helper = obj.padding;}
+		   				if(i==1 || i==3){var helper = obj.containerWidth - obj.padding;}
+		   				return helper;
+						})
+		   	.attr("y", function(d,i){
+		   				if(i==0 || i==1){var helper = spacing + obj.padding/2;}
+		   				if(i==2 || i==3){var helper = spacing + obj.padding + 2*obj.barHeight + obj.padding/2 +14;}
+		   				return helper;
+						})
+		   	.text(function(d){ return d.width; } )
+			.attr("text-anchor", function(d,i){
+		   				if(i==0 || i==2){var helper = "start";}
+		   				if(i==1 || i==3){var helper = "end";}
+		   				return helper;
+						})
+	;
+
+	//Write chart title
+
+	var title = obj.container
+		.append("text")
+		.attr("class","title")
+		.attr("x", obj.padding)
+		.attr("y", obj.padding)
+		.text(obj.name)
 		;
-*/
+
 }
 
 //Bubble Chart
