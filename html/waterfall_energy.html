@@ -4,7 +4,10 @@
 		<script src="../js/chartlib.js"></script>
 		
 		<style>
-			svg{
+			#previous{
+				background-color: #fff;
+			}
+			#current{
 				background-color: #fff;
 			}
 			.bar:hover{
@@ -37,19 +40,25 @@
 				font-family:arial;
 				font-size: 12px;
 			}
+			#delta .green{
+				fill: lime;
+			}
+			#delta .sum{
+				fill: green;
+			}
 		</style>
 	</head>
 
 	<body>
 		<script>
-			var width = 200,
+			var width = 150,
 				height = 200;
 			
 		
 			var svg = d3.select("body").append("svg")
 				.attr("width", width)
 				.attr("height", height)
-				.attr("id", "2011");	
+				.attr("id", "previous");					
 				
 			waterfall
 			({
@@ -58,7 +67,8 @@
 				height: height,
 				name: "GuV",
 				css: "bar",
-				padding: 40,
+				paddingLeft: 1,
+				paddingRight: 30,
 				barHeight: 20,
 				barPadding: 10,
 				showTitle: false,

@@ -140,34 +140,35 @@ function waterfall(obj) {
 
 	var g = obj.svg.append("g").attr("id", obj.name);
 	var data = obj.data;
-	var max = data[0];
-	var min = data[0];
-	var helper = data[0];
+	var max = 0;
+	var min = 0;
+	var helper = 0;
 	var titleHeight = 0;
 	
 	//Find min and max
 	for (var i = 0; i < data.length; i++)
 	{
-		if (i < data.length -1){
-			if(helper+data[i+1]>max)
+		if (i < data.length){
+			if(helper+data[i].value>max&&!data[i].sum)
 			{
-				max = helper + data[i+1];	
+				max = helper + data[i].value;	
 			}
 			else 
 			{
-				if(helper+data[i+1]<min)
+				if(helper+data[i].value<min&&!data[i].sum)
 				{
-					min = helper + data[i+1];
+					min = helper + data[i].value;
 				}
 			}
-			helper = helper + data[i+1];
+			if(!data[i].sum){helper = helper + data[i].value;}
 		}
 	}
 	
 	
 	var xScale = d3.scale.linear()
 		.domain([min, max])
-		.rangeRound([obj.padding, obj.width-obj.padding]);		
+		//.rangeRound([obj.padding, obj.width-obj.padding]);
+		.rangeRound([obj.paddingLeft, obj.width-obj.paddingRight]);		
 	
 	var x0 = xScale(0);
 	var offset = 0;
@@ -201,79 +202,76 @@ function waterfall(obj) {
 	.data(data)
 		.enter()
 		.append("rect");
-		
 	rect
-		.attr("x", function(d) {if(d<0){offset = offset + d; return xScale(offset)}else{offset = offset + d; return xScale(offset-d)}})
+		.attr("x", function(d) {
+			if(d.sum)
+			{return xScale(0);}
+			else{
+				if(d.value<0)
+				{
+					offset = offset + d.value; return xScale(offset)
+				}
+				else
+				{
+					offset = offset + d.value; return xScale(offset-d.value)
+				}
+			}})
 		.attr("width",0)
-		.attr("title","placeholder");
+		.attr("title", function(d){return d.name;});
 	rect
 		.transition()
 		.duration(500)
 		.attr("y", function(d,i) {return titleHeight + obj.barHeight*i + obj.barPadding*i;})
-		.attr("width", function(d){return xScale(Math.abs(d))-xScale(0);})
+		.attr("width", function(d){return xScale(Math.abs(d.value))-xScale(0);})
 		.attr("height", obj.barHeight)
-		.attr("class", function(d){if(d>0){return obj.css + " "+"green";}else{return obj.css + " "+"red";}});
-	
-	
-	//sum line
-	if(obj.showSum){
-		var sum = 0;
-		for (var i in data) {
-			sum = sum + data[i];
-		}
-	
-		g.data([sum])
-			.append("rect")
-			.attr("x", function(d){if(d>0){return x0}else{return xScale(0)-(xScale(Math.abs(d))-xScale(0))}})
-			.attr("y", titleHeight + data.length*obj.barHeight+data.length*obj.barPadding)
-			.attr("width", 0)
-			.transition()
-			.duration(500)
-			.attr("width", function(d){return xScale(Math.abs(d))-xScale(0)})
-			.attr("height", obj.barHeight)
-			.attr("class", obj.css + " sum");
-		
-		if(obj.showValues){		
-			g.data([sum])
-				.append("text")
-				.attr("x", function(d){if(d>0){return x0+xScale(d)-xScale(0)+5}else{return xScale(0)-(xScale(Math.abs(d))-xScale(0))-(d+"").length*7}})
-				.attr("y", titleHeight + data.length*obj.barHeight+data.length*obj.barPadding+obj.barHeight/2+5)
-				.attr("class", "values sumLabel")
-				.text(sum);
+		.attr("class", function(d){
+			if(d.value>0)
+			{
+				if(d.sum){return obj.css + " "+"sum";}else{return obj.css + " "+"green";}
 			}
-	}
+			else
+			{
+				return obj.css + " "+"red";
+			}});
 	
-	//connectors
-	if(obj.showConnectors){
-		
-		var data2 = new Array();
-		for (var i in data) {
-			data2[i] = data[i];
-		}
-		if(!obj.showSum){
-			data2.pop();
-		}
-		offset = 0;
-		offset2 = 0;
-		g.selectAll(".barConnector")
-		.data(data2)
-			.enter().append("line")
-			.attr("class", "barConnector")
-			.attr("x1", function(d) {offset = offset + d; return xScale(offset)})
-			.attr("x2", function(d) {offset2 = offset2 + d; return xScale(offset2)})
-			.attr("y1", function(d,i) {return titleHeight + obj.barHeight*(i+1) + obj.barPadding*i;})
-			.attr("y2", function(d,i) {return titleHeight + obj.barHeight*(i+1) + obj.barPadding*(i+1);});
-	}
 	//value labels
 	if(obj.showValues){
 		offset = x0;
 		g.selectAll(".label")
 		.data(data)
 			.enter().append("text")
-			.attr("class", "values")
-			.attr("x", function(d){if(d>0){offset = offset + xScale(d)-xScale(0); return offset+5}else{offset = offset - (xScale(Math.abs(d))-xScale(0)); return offset-(d+"").length*7}})
+			.attr("class", function(d){if(d.sum){ return "value sumLabel"}else{return "value"}})
+			.attr("x", function(d){
+				if(d.value>0){
+					if(d.sum){return xScale(d.value)+5}
+					else{
+						offset = offset + xScale(d.value)-xScale(0); 
+						return offset+5
+					}
+				}
+				else
+				{
+					offset = offset - (xScale(Math.abs(d.value))-xScale(0));
+					return offset-(d.value+"").length*7
+				}})
 			.attr("y", function(d,i) {return titleHeight + obj.barHeight*i + obj.barPadding*i + obj.barHeight/2+5;})
-			.text(function(d) { return d;});
+			.text(function(d) { return d.value;});
 	}
+	//connectors
+	if(obj.showConnectors){
+		
+		offset = 0;
+		offset2 = 0;
+		data.pop();
+		g.selectAll(".barConnector")
+		.data(data)
+			.enter().append("line")
+			.attr("class", "barConnector")
+			.attr("x1", function(d) {offset = offset + d.value; return xScale(offset)})
+			.attr("x2", function(d) {offset2 = offset2 + d.value; return xScale(offset2)})
+			.attr("y1", function(d,i) {return titleHeight + obj.barHeight*(i+1) + obj.barPadding*i;})
+			.attr("y2", function(d,i) {return titleHeight + obj.barHeight*(i+1) + obj.barPadding*(i+1);});
+	}
+
 	
 }
