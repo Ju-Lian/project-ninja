@@ -1,0 +1,156 @@
+<html>
+	<head>
+		<script src="../js/d3.v3.min.js"></script>
+		<script src="../js/chartlib.js"></script>
+		
+		<style>
+			#previous{
+				background:transparent;
+			}
+			#current{
+				background-color: #fff;
+			}
+			.green{
+				fill: #ACFA58;
+			}
+			.red{
+				fill: #FE2E2E;
+			}
+			.red.sum{
+				fill: #DF0101;
+			}
+			.green.sum{
+				fill: #088A08;
+			}
+			.bar:hover, .sum:hover{
+				fill: orange;
+			}
+			.sumLabel{
+				font-weight: bold;
+			}
+			.title{
+				font-family: arial;
+			}
+			.zeroLine{
+				stroke: #999;
+			}
+			
+			.barConnector{
+				stroke: #333;
+				stroke-width:1;
+			}
+			.value{
+				font-family:arial;
+				font-size: 12px;
+			}
+			#delta .green{
+				fill: lime;
+			}
+			#delta .sum{
+				fill: green;
+			}
+		</style>
+	</head>
+
+	<body>
+		<script>
+			var width = 160,
+				height =410;
+			
+		
+			var svg = d3.select("body").append("svg")
+				.attr("width", width)
+				.attr("height", height)
+				.attr("id", "previous");					
+				
+			waterfall
+			({
+				svg: svg,
+				width: width,
+				height: height,
+				name: "GuV",
+				css: "bar",
+				paddingLeft: 20,
+				paddingRight: 20,
+				barHeight: 15,
+				barPadding: 15,
+				showTitle: false,
+				showZeroLine: true,
+				showConnectors: true,
+				showValues: true,
+				showSum: true,
+				data: [{
+							value: 10,
+							sum: false,
+							name: "Stromverkauf"
+						},
+						{
+							value: -20,
+							sum: false,
+							name: "Stromhandel"
+						},
+						{
+							value: -10,
+							sum: true,
+							name: "Umsatzerloese"
+						},
+						{
+							value: 5,
+							sum: false,
+							name: "Bestandsveraenderung"
+						},
+						{
+							value: 10,
+							sum: false,
+							name: "Andere aktivierte Eigenleistungen"
+						},
+						{
+							value: 0,
+							sum: false,
+							name: "Sonstige betriebliche Ertäge"
+						},
+						{
+							value: -10,
+							sum: false,
+							name: "Strombezug"
+						},
+						{
+							value: 15,
+							sum: false,
+							name: "Netznutzung Strom"
+						},
+						{
+							value: 10,
+							sum: true,
+							name: "Materialaufwand"
+						},
+						{
+							value: -10,
+							sum: false,
+							name: "Personalaufwand"
+						},
+						{
+							value: -20,
+							sum: false,
+							name: "Abschreibungen"
+						},
+						{
+							value: 5,
+							sum: false,
+							name: "Abschreibungen"
+						},
+						{
+							value: 0,
+							sum: false,
+							name: "Sonstige betriebliche Aufwendungen"
+						},
+						{
+							value: -15,
+							sum: true,
+							name: "EBIT"
+						}
+				]
+			});
+		</script>
+	</body>
+</html>

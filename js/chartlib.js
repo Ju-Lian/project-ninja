@@ -140,6 +140,7 @@ function waterfall(obj) {
 
 	var g = obj.svg.append("g").attr("id", obj.name);
 	var data = obj.data;
+	
 	var max = 0;
 	var min = 0;
 	var helper = 0;
@@ -167,7 +168,6 @@ function waterfall(obj) {
 	
 	var xScale = d3.scale.linear()
 		.domain([min, max])
-		//.rangeRound([obj.padding, obj.width-obj.padding]);
 		.rangeRound([obj.paddingLeft, obj.width-obj.paddingRight]);		
 	
 	var x0 = xScale(0);
@@ -204,17 +204,14 @@ function waterfall(obj) {
 		.append("rect");
 	rect
 		.attr("x", function(d) {
-			if(d.sum)
-			{return xScale(0);}
-			else{
-				if(d.value<0)
-				{
-					offset = offset + d.value; return xScale(offset)
-				}
-				else
-				{
-					offset = offset + d.value; return xScale(offset-d.value)
-				}
+			if(d.sum){offset = 0;}
+			if(d.value<0)
+			{
+				offset = offset + d.value; return xScale(offset)
+			}
+			else
+			{
+				offset = offset + d.value; return xScale(offset-d.value)
 			}})
 		.attr("width",0)
 		.attr("title", function(d){return d.name;});
@@ -227,32 +224,32 @@ function waterfall(obj) {
 		.attr("class", function(d){
 			if(d.value>0)
 			{
-				if(d.sum){return obj.css + " "+"sum";}else{return obj.css + " "+"green";}
+				if(d.sum){return obj.css + " green "+"sum";}else{return obj.css + " "+"green";}
 			}
 			else
 			{
-				return obj.css + " "+"red";
+				if(d.sum){return obj.css + " red "+"sum";}else{return obj.css + " "+"red";}
 			}});
 	
 	//value labels
 	if(obj.showValues){
-		offset = x0;
+		offset = 0;
 		g.selectAll(".label")
 		.data(data)
 			.enter().append("text")
 			.attr("class", function(d){if(d.sum){ return "value sumLabel"}else{return "value"}})
 			.attr("x", function(d){
-				if(d.value>0){
-					if(d.sum){return xScale(d.value)+5}
-					else{
-						offset = offset + xScale(d.value)-xScale(0); 
-						return offset+5
-					}
+				if(d.sum){offset = 0;}
+				console.log(offset);
+				if(d.value>0)
+				{
+					offset = offset + d.value; 
+						return xScale(offset)+5;
 				}
 				else
 				{
-					offset = offset - (xScale(Math.abs(d.value))-xScale(0));
-					return offset-(d.value+"").length*7
+					offset = offset + d.value;
+					return xScale(offset)-(d.value+"").length*7;
 				}})
 			.attr("y", function(d,i) {return titleHeight + obj.barHeight*i + obj.barPadding*i + obj.barHeight/2+5;})
 			.text(function(d) { return d.value;});
@@ -267,8 +264,8 @@ function waterfall(obj) {
 		.data(data)
 			.enter().append("line")
 			.attr("class", "barConnector")
-			.attr("x1", function(d) {offset = offset + d.value; return xScale(offset)})
-			.attr("x2", function(d) {offset2 = offset2 + d.value; return xScale(offset2)})
+			.attr("x1", function(d) {if(d.sum){offset = 0;}offset = offset + d.value; return xScale(offset)})
+			.attr("x2", function(d) {if(d.sum){offset2 = 0;}offset2 = offset2 + d.value; return xScale(offset2)})
 			.attr("y1", function(d,i) {return titleHeight + obj.barHeight*(i+1) + obj.barPadding*i;})
 			.attr("y2", function(d,i) {return titleHeight + obj.barHeight*(i+1) + obj.barPadding*(i+1);});
 	}
