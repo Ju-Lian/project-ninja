@@ -1,0 +1,80 @@
+<html>
+	<head>
+		<script src="../js/d3.v3.min.js"></script>
+		<script src="../js/chartlib.js"></script>
+		
+		<style>
+			.title{
+				font-size: 12;
+				font-weight: bold;
+				font-family: Helvetica;
+			}
+			.barlabels{
+				font-size: 12;
+				font-weight: bold;
+				font-family: Helvetica;
+			}
+
+			.barvalues{
+				font-size: 12;
+				font-weight: bold;
+				font-family: Helvetica;
+			}
+		</style>
+	</head>
+
+	<body>
+		<script>
+
+			//Define Width and Height of the container
+
+			var width = 200,
+				height = 120;
+
+
+			//Generate data
+
+			var dpo = getRandom(18, 26),
+				dio = getRandom(8, 12),
+				dso = getRandom(18, 26),
+				ccc = dso + dio - dpo;
+		
+			//Call Chart
+
+			var svg = d3.select("body").append("svg")
+				.attr("width", width)
+				.attr("height", height);	
+			
+			cccChart
+			({	
+				name: "Cash Conversion Cycle",
+				container: svg,
+				containerWidth: width,
+				containerHeight: height,
+				barHeight: 15,
+				padding: 10,
+				data: [{
+							label: "DPO",
+							width: dpo,
+							fill: "rgb(160,165,169)"
+						},
+						{
+							label: "CCC",
+							width: ccc,
+							fill: "rgb(0,153,0)"
+						},
+						{
+							label: "DIO",
+							width: dio,
+							fill: "rgb(160,165,169)"
+						},
+						{
+							label: "DSO",
+							width: dso,
+							fill: "rgb(160,165,169)"
+						}]
+			});
+			
+		</script>
+	</body>
+</html>

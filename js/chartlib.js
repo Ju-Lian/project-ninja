@@ -1,3 +1,142 @@
+/*
+
+ _       _________ _       _________ _______      _______           _______  _______ _________ _       _________ ______  
+( (    /|\__   __/( (    /|\__    _/(  ___  )    (  ____ \|\     /|(  ___  )(  ____ )\__   __/( \      \__   __/(  ___ \ 
+|  \  ( |   ) (   |  \  ( |   )  (  | (   ) |    | (    \/| )   ( || (   ) || (    )|   ) (   | (         ) (   | (   ) )
+|   \ | |   | |   |   \ | |   |  |  | (___) |    | |      | (___) || (___) || (____)|   | |   | |         | |   | (__/ / 
+| (\ \) |   | |   | (\ \) |   |  |  |  ___  |    | |      |  ___  ||  ___  ||     __)   | |   | |         | |   |  __ (  
+| | \   |   | |   | | \   |   |  |  | (   ) |    | |      | (   ) || (   ) || (\ (      | |   | |         | |   | (  \ \ 
+| )  \  |___) (___| )  \  ||\_)  )  | )   ( |    | (____/\| )   ( || )   ( || ) \ \__   | |   | (____/\___) (___| )___) )
+|/    )_)\_______/|/    )_)(____/   |/     \|    (_______/|/     \||/     \||/   \__/   )_(   (_______/\_______/|/ \___/ 
+                                                                                                                       
+
+*/
+
+//Random value
+
+//Get some random values for testing
+
+function getRandom(min, max) {
+
+	if(min > max) { return -1; }
+								 
+	if(min == max) { return min; }
+								 
+	var r;
+								 
+	do { r = Math.random(); }
+	while(r == 1.0);
+									
+	return min + parseInt(r * (max-min+1));
+
+}
+
+/*--------------------------------------------------------------------------------------*/
+// Cash Conversion Cycle
+
+// DPO			 CCC
+// 23			   7
+// ######### #######
+// ####### #########
+// 10		      20
+// DIO 			 DSO
+
+function cccChart(obj) {
+
+	var spacing = 40;
+
+	//Draw the 4 bars
+
+	var bars = obj.container
+		.selectAll("rect")
+		 .data(obj.data)
+		  .enter().append("rect")
+		   .attr("x", function(d,i){
+		   				if(i==0 || i==2){var helper = obj.padding;}
+		   				if(i==1 || i==3){var helper = 2*obj.padding + (obj.containerWidth - 3 * obj.padding) * obj.data[i-1].width / (obj.data[i].width + obj.data[i-1].width);}
+		   				return helper;
+						})
+		   .attr("y", function(d,i){
+		   				if(i==0 || i==1){var helper = spacing + obj.padding;}
+		   				if(i==2 || i==3){var helper = spacing + obj.padding + obj.barHeight + obj.padding/2;}
+		   				return helper;
+						})
+		   .attr("width", function(d, i){ 
+		   				if(i==0 || i==2){var helper = (obj.containerWidth - 3 * obj.padding) * obj.data[i].width / (obj.data[i].width + obj.data[i+1].width);}
+		   				if(i==1 || i==3){var helper = (obj.containerWidth - 3 * obj.padding) * obj.data[i].width / (obj.data[i].width + obj.data[i-1].width);}
+		   				return helper; 
+		   				})
+		   .attr("height", obj.barHeight)
+		   .attr("fill", function(d){
+		   				return d.fill;
+		   				})
+		;
+
+	//Write the bar labels
+
+	var labels = obj.container
+		.selectAll(".barlabels")
+		 .data(obj.data)
+		  .enter().append("text")
+		   	.attr("class","barlabels")
+		   	.attr("x", function(d,i){
+		   				if(i==0 || i==2){var helper = obj.padding;}
+		   				if(i==1 || i==3){var helper = obj.containerWidth - obj.padding;}
+		   				return helper;
+						})
+		   	.attr("y", function(d,i){
+		   				if(i==0 || i==1){var helper = spacing - obj.padding;}
+		   				if(i==2 || i==3){var helper = spacing + obj.padding + 2*obj.barHeight + obj.padding/2 +29;}
+		   				return helper;
+						})
+		   	.text(function(d){ return d.label; })
+			.attr("text-anchor", function(d,i){
+		   				if(i==0 || i==2){var helper = "start";}
+		   				if(i==1 || i==3){var helper = "end";}
+		   				return helper;
+						})
+	;
+
+	//Write the bar values
+
+	var values = obj.container
+		.selectAll(".barvalues")
+		 .data(obj.data)
+		  .enter().append("text")
+		   	.attr("class","barvalues")
+		   	.attr("x", function(d,i){
+		   				if(i==0 || i==2){var helper = obj.padding;}
+		   				if(i==1 || i==3){var helper = obj.containerWidth - obj.padding;}
+		   				return helper;
+						})
+		   	.attr("y", function(d,i){
+		   				if(i==0 || i==1){var helper = spacing + obj.padding/2;}
+		   				if(i==2 || i==3){var helper = spacing + obj.padding + 2*obj.barHeight + obj.padding/2 +14;}
+		   				return helper;
+						})
+		   	.text(function(d){ return d.width; } )
+			.attr("text-anchor", function(d,i){
+		   				if(i==0 || i==2){var helper = "start";}
+		   				if(i==1 || i==3){var helper = "end";}
+		   				return helper;
+						})
+	;
+
+	//Write chart title
+
+	var title = obj.container
+		.append("text")
+		.attr("class","title")
+		.attr("x", obj.padding)
+		.attr("y", obj.padding)
+		.text(obj.name)
+		;
+
+}
+
+/*--------------------------------------------------------------------------------------*/
+//Bubble Chart
+
 function bubble(obj) {
 	var data = obj.data;
 	
