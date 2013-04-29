@@ -275,6 +275,9 @@ function bubble(obj) {
 	}
 }
 
+/*--------------------------------------------------------------------------------------*/
+//Waterfall Chart
+
 function waterfall(obj) {
 
 	var g = obj.svg.append("g").attr("id", obj.name);
