@@ -12,6 +12,56 @@
 
 */
 
+function column(obj){
+	data = obj.data;
+	values = [0];
+	var sum = 0;
+	
+	for (var i = 0; i < data.length; i++){
+		sum = sum + data[i].x;
+		values.push(sum);
+	}
+	
+	sum = 0;
+	
+	for (var i in data) sum = sum + data[i].x;
+	
+	alert(sum);
+	
+	values.push(sum);
+	
+	var xScale = d3.scale.linear()
+		.domain([0, d3.max(values)])
+		.rangeRound([10, obj.width-20]);
+		
+	var xAxis = d3.svg.axis()
+		.scale(xScale)
+		.orient("bottom")
+		.tickValues(values)
+		.tickFormat(function(d) {return d});
+		
+	var x = obj.svg.append("g")
+		.attr("class","axis")
+		.attr("transform", "translate(0,"+ (obj.height-20)+")")
+		.call(xAxis);
+		
+	var g = obj.svg.append("g").attr("id", obj.name);
+	
+	var rect = g.selectAll("rect")
+		.data(data)
+		.enter()
+		.append("rect");
+		
+	rect
+		.attr("class", "rect")
+		.attr("x", function(d,i){return xScale(values[i]);})
+		.attr("y", obj.height-50)
+		.attr("width", function(d){return xScale(d.x);})
+		.attr("height", function(d){return d.y});
+}
+
+
+
 //Random value
 
 //Get some random values for testing
@@ -163,6 +213,7 @@ function bubble(obj) {
                   .scale(xScale)
                   .orient("bottom")
 				  .tickValues([0,(xMax)/2,xMax])
+				  //.ticks(3)
 				  .tickSize(10);
 				  
 	if(obj.xCustom){
@@ -177,7 +228,7 @@ function bubble(obj) {
 	var yAxis = d3.svg.axis()
                   .scale(yScale)
                   .orient("left")
-				  .tickValues([0,(yMax)/2,yMax])
+				  .tickValues([0,yMax/2,yMax])
 				  .tickSize(10);
 				  
 	if(obj.yCustom){
@@ -202,15 +253,10 @@ function bubble(obj) {
 		.attr("y",50)
 		.text(obj.xLabel);
 	}
-	
 	if(obj.yLabel){
-		var split = obj.yLabel.split(" ");
-		var text = y.append("text")
-		for (var i = 0; i < split.length; i++)
-		text.append("tspan")
-		.attr("y", obj.height/2+(i-1)*15)
-		.attr("x",-80)
-		.text(split[i]);
+		y.append("text")
+		.attr("transform","translate(-40,"+(obj.height/2+obj.yLabel.length*3)+")rotate(-90)")
+		.text(obj.yLabel);
 	}
 	
 	if(obj.cluster){
@@ -306,7 +352,6 @@ function waterfall(obj) {
 			if(!data[i].sum){helper = helper + data[i].value;}
 		}
 	}
-	
 	
 	var xScale = d3.scale.linear()
 		.domain([min, max])
