@@ -14,36 +14,55 @@
 
 function column(obj){
 	data = obj.data;
-	values = [0];
+	xVal = [0];
+	yVal = [];
 	var sum = 0;
+	
+	padding = 30;
 	
 	for (var i = 0; i < data.length; i++){
 		sum = sum + data[i].x;
-		values.push(sum);
+		xVal.push(sum);
+		yVal.push(data[i].y);
 	}
 	
 	sum = 0;
 	
 	for (var i in data) sum = sum + data[i].x;
+
+	yMax = d3.max(yVal);
 	
-	alert(sum);
-	
-	values.push(sum);
+	alert(yMax);
 	
 	var xScale = d3.scale.linear()
-		.domain([0, d3.max(values)])
-		.rangeRound([10, obj.width-20]);
+		.domain([0, d3.max(xVal)])
+		.rangeRound([padding, obj.width-padding]);
+	
+	var yScale = d3.scale.linear()
+		.domain([yMax, 0])
+		.rangeRound([padding, obj.height-padding]);
 		
 	var xAxis = d3.svg.axis()
 		.scale(xScale)
 		.orient("bottom")
-		.tickValues(values)
+		.tickValues(xVal)
 		.tickFormat(function(d) {return d});
 		
 	var x = obj.svg.append("g")
 		.attr("class","axis")
-		.attr("transform", "translate(0,"+ (obj.height-20)+")")
+		.attr("transform", "translate(0,"+ (obj.height-padding)+")")
 		.call(xAxis);
+		
+	var yAxis = d3.svg.axis()
+		.scale(yScale)
+		.orient("left")
+		.tickValues([0,yMax/2,yMax])
+		.tickSize(10);
+				  
+	y = obj.svg.append("g")
+		.attr("class","axis")
+		.attr("transform", "translate(" + padding + ",0)")
+		.call(yAxis);
 		
 	var g = obj.svg.append("g").attr("id", obj.name);
 	
@@ -51,13 +70,13 @@ function column(obj){
 		.data(data)
 		.enter()
 		.append("rect");
-		
+	
 	rect
 		.attr("class", "rect")
-		.attr("x", function(d,i){return xScale(values[i]);})
-		.attr("y", obj.height-50)
-		.attr("width", function(d){return xScale(d.x);})
-		.attr("height", function(d){return d.y});
+		.attr("x", function(d,i){return xScale(xVal[i]);})
+		.attr("y", function(d){return yScale(0)-(obj.height-yScale(d.y))+padding;})
+		.attr("width", function(d){return xScale(d.x)-padding;})
+		.attr("height", function(d){return obj.height-yScale(d.y)-padding});
 }
 
 
