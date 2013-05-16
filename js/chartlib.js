@@ -12,11 +12,42 @@
 
 */
 
+function compareX(a, b) {
+  return a.x > b.x ? -1 : a.x < b.x ? 1 : 0;
+}
+
+function compareY(a, b) {
+  return a.y > b.y ? -1 : a.y < b.y ? 1 : 0;
+}
+
+function compareArea(a, b) {
+  return (a.x * a.y) > (b.x * b.y) ? -1 : (a.x * a.y) < (b.x * b.y) ? 1 : 0;
+}
+
 function column(obj){
+
 	data = obj.data;
 	xVal = [0];
+	xAxisPos = [];
+	xAxisVal = [];
 	yVal = [];
+	space = 5;
 	var sum = 0;
+	sort = obj.sort;
+	helper = [];
+	
+	if(sort == "x"){
+		data.sort(compareX);
+	}
+	
+	if(sort == "y"){
+		data.sort(compareY);
+	}
+		
+	if(sort == "area"){
+		data.sort(compareArea);
+	}
+	
 	
 	padding = 30;
 	
@@ -28,11 +59,18 @@ function column(obj){
 	
 	sum = 0;
 	
-	for (var i in data) sum = sum + data[i].x;
+	for (var i = 0; i < data.length; i++){
+		sum = sum + data[i].x/2;
+		xAxisPos.push(sum);
+		xAxisVal.push(data[i].x);
+		sum = sum + data[i].x/2;
+	}
+	
+	//for (var i in data) sum = sum + data[i].x;
 
 	yMax = d3.max(yVal);
 	
-	alert(yMax);
+	//alert(yMax);
 	
 	var xScale = d3.scale.linear()
 		.domain([0, d3.max(xVal)])
@@ -45,11 +83,12 @@ function column(obj){
 	var xAxis = d3.svg.axis()
 		.scale(xScale)
 		.orient("bottom")
-		.tickValues(xVal)
-		.tickFormat(function(d) {return d});
+		.tickValues(xAxisPos)
+		.tickFormat(function(d, i) {return xAxisVal[i]});
 		
 	var x = obj.svg.append("g")
 		.attr("class","axis")
+		.attr("id", "xAxis")
 		.attr("transform", "translate(0,"+ (obj.height-padding)+")")
 		.call(xAxis);
 		
@@ -73,9 +112,9 @@ function column(obj){
 	
 	rect
 		.attr("class", "rect")
-		.attr("x", function(d,i){return xScale(xVal[i]);})
+		.attr("x", function(d,i){return xScale(xVal[i])+space*(i+1)-space*(i);})
 		.attr("y", function(d){return yScale(0)-(obj.height-yScale(d.y))+padding;})
-		.attr("width", function(d){return xScale(d.x)-padding;})
+		.attr("width", function(d, i){return xScale(d.x)-padding-space*2;})
 		.attr("height", function(d){return obj.height-yScale(d.y)-padding});
 }
 
