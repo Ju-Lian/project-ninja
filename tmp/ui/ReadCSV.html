@@ -13,6 +13,7 @@
 		window.onload = function()
 		{ 
 			var csvFilePath="../data/MarginVolume.csv"; //CSV file
+			var marginVolumeBars;
 			d3.csv(csvFilePath, function(d) 
 			{
 				return {
@@ -33,13 +34,13 @@
 							.attr("width", width)
 							.attr("height", height);	
 
-				marginVolumeBars
+				marginVolumeBars = new MarginVolumeBars
 				({
 					svg: svg,
 					width: width,
 					height: height,
 					name: "Margin Quantity Chart",
-					padding: 40,
+					padding: 50,
 					rangeBandsInnerPadding: .1,
 					rangeBandsOuterPadding: .6,
 					sortByVolume: true,

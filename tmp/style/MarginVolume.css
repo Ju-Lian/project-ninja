@@ -23,7 +23,7 @@ svg {
 }
 
 .axis.label {
-	fill: black;
+	fill: grey;
 	font: 11px sans-serif;
 }
 

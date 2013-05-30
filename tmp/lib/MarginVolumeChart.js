@@ -23,7 +23,7 @@
 *	x-Axis --> Volume
 *	(IMPORTANT: Margin and Volume values must be greater or equal 0)
 */
-function marginVolumeBars(obj) 
+var MarginVolumeBars = function(obj) 
 {
 	var chart = obj.svg.append("g").attr("id", obj.name);
 	
@@ -61,25 +61,23 @@ function marginVolumeBars(obj)
 	
 	/* GRID LINES */
 	if(obj.showGridLines) {
-		var lineCnt=(yMax<=6) ? Math.floor(yMax) : 6;
-		var linePadding=Math.ceil(yMax/lineCnt); //padding between each grid line
-		console.log("linePadding="+linePadding+"\tlineCnt="+lineCnt+" "+Math.floor(yMax));
+		var lineCnt=6; //number of grid lines
+		var linePadding=yMax/lineCnt; //padding between each grid line
 		var gridLines=new Array();
 		for(var i=0; i<lineCnt; i++) {
 			gridLines.push(yMax-linePadding*i);
 		}	
-		var grid=chart.append("g").attr("class","grid")
-			.attr("transform","translate("+obj.padding+","+obj.padding+")");
-			
+		var grid=chart.append("g").attr("class","grid");
+
 		grid.selectAll()
 			.data(gridLines)
 			.enter()
 			.append("line")
 			.attr("class","gridLine")
-			.attr("x1",0)
-			.attr("y1",function(d,i){return yScale(0)-yScale(gridLines[i])})
-			.attr("x2",obj.width-2*obj.padding)
-			.attr("y2",function(d,i){return yScale(0)-yScale(gridLines[i])});		
+			.attr("x1",obj.padding)
+			.attr("y1",function(d,i){return yScale(gridLines[i])})
+			.attr("x2",obj.width-obj.padding)
+			.attr("y2",function(d,i){return yScale(gridLines[i])});
 	}
 	/* AXIS */
 	// X
@@ -97,7 +95,7 @@ function marginVolumeBars(obj)
 			.attr("transform", function(d) {
 				return "rotate(0)";
 			});			
-	// x labels line break
+	// x labels line break (only works for two Strings with a whitespace inbetween)
 	var manualLineBr=function(d) {
 		var el=d3.select(this);
 		var words=d.split(' ');
@@ -112,24 +110,26 @@ function marginVolumeBars(obj)
 				.style("text-anchor", "middle")					  
 				.text("Volume");		
 	
-	// Y.tickValues([0,(yMax)/2,yMax])
-	var yAxis = d3.svg.axis()
-				  .scale(yScale)
-				  .orient("left")
-				  .tickSize(5);
-	var y = chart.append("g")
-			.attr("class","y axis")
-			.attr("transform", "translate(" + obj.padding + ",0)")
-			.call(yAxis);
+	// Y
 	// y axis label
 	chart.append("text").attr("class","axis label")
 				.attr("x",-obj.height/2)
-				.attr("y", "1em")
+				.attr("y", ".7em")
 				.style("text-anchor", "middle")
 				.attr("transform", function(d) {
 					return "rotate(-90)" 
 				})						  
-				.text("Margin");		
+				.text("Margin");
+	//draw y axis
+	var yAxis = d3.svg.axis()
+				  .scale(yScale)
+				  .tickValues([0,(yMax)/2,yMax])
+				  .tickFormat(d3.format(",.2f"))
+				  .orient("left");
+	var y = chart.append("g")
+			.attr("class","y axis")
+			.attr("transform", "translate(" + obj.padding + ",0)")
+			.call(yAxis);
 	
 	/* BARS */
 	var volumes=obj.data.map(function(d){return d.volume;});
@@ -138,10 +138,11 @@ function marginVolumeBars(obj)
 	for(var v in volumes) {
 		barWidths.push((xScale.rangeBand() * volumes[v])/maxVolume);
 	}
-	chart.selectAll()
+	chart.selectAll("rect")
 		.data(obj.data.map(function(d){return d.margin;}))
 		.enter().append("rect")
 		.attr("class","bar")
+		.attr("id", "bar")
 		.attr("x", function(d,i) {
 			return xScale(i)+((xScale.rangeBand()-barWidths[i])/2);
 		})
@@ -152,4 +153,27 @@ function marginVolumeBars(obj)
 			return barWidths[i];
 		})
 		.attr("height", function(d){return Math.abs(yScale(0)-yScale(d));});
+	
+	/** Update data - transition
+	* Note: Make sure, that all values are positive!
+	*/	
+	this.update = function(data) {
+		chart.selectAll("#bar")
+			.data(data)
+			.transition()
+			.duration(500)
+			.attr("x", function(d,i) {
+				return xScale(i)+((xScale.rangeBand()-barWidths[i])/2);
+			})
+			.attr("y",function(d){
+				return yScale(d);
+			})
+			.attr("width", function(d,i) {
+				return barWidths[i];
+			})
+			.attr("height", function(d){return Math.abs(yScale(0)-yScale(d));});
+
+		//store new data in obj
+		obj.data=data;
+	}
 };	
