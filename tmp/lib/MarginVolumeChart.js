@@ -23,7 +23,7 @@
 *	x-Axis --> Volume
 *	(IMPORTANT: Margin and Volume values must be greater or equal 0)
 */
-var MarginVolumeBars = function(obj) 
+function MarginVolumeBars(obj) 
 {
 	var chart = obj.svg.append("g").attr("id", obj.name);
 	
