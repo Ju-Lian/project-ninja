@@ -11,33 +11,33 @@
 	<script src="../lib/ReadCSV.js"></script> 
 	
 	<script type="text/javascript" >	
+		var width = 400;
+		var height = 300;
+		var svg = d3.select("body").append("svg")
+				.attr("width", width)
+				.attr("height", height);	
+		var marginVolumeBars;
+		
+		function draw(data) {
+			marginVolumeBars = new MarginVolumeBars
+			({
+				svg: svg,
+				width: width,
+				height: height,
+				name: "Margin Quantity Chart",
+				padding: 50,
+				rangeBandsInnerPadding: .1,
+				rangeBandsOuterPadding: .6,
+				sortByVolume: true,
+				showGridLines: true,
+				data: data
+			});
+		}		
+		
 		window.onload = function()
-		{
+		{		
 			var path="../data/MarginVolume.csv"; //CSV file
-			ReadCSV(path, draw); // second parameter: custom function
-			
-			function draw(data) {
-				var width = 400;
-				var height = 300;
-				var svg = d3.select("body").append("svg")
-							.attr("width", width)
-							.attr("height", height);	
-			
-				var marginVolumeBars;
-					marginVolumeBars = new MarginVolumeBars
-					({
-						svg: svg,
-						width: width,
-						height: height,
-						name: "Margin Quantity Chart",
-						padding: 50,
-						rangeBandsInnerPadding: .1,
-						rangeBandsOuterPadding: .6,
-						sortByVolume: true,
-						showGridLines: true,
-						data: data
-					});
-			}
+			ReadCSV_VolumeMargin(path, draw); // second parameter: custom function
 		}
 	</script>
 

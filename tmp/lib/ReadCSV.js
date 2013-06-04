@@ -1,4 +1,8 @@
-function ReadCSV(path, func) {
+/** 
+* Expected headings
+* Product, Margin, Volume
+*/
+function ReadCSV_VolumeMargin(path, func) {
 	d3.csv(path, function(d) 
 	{
 		return {
@@ -9,10 +13,8 @@ function ReadCSV(path, func) {
 	}, 
 	function(error, rows) 
 	{
-		//--> Insert custom function here <--
-		// -- d3.csv is an asynchronous function, therefore its data cannot be used in another scope outside the csv-function
-		// -- data is stored in rows
-		console.log(rows);
-		func(rows);
+		//call custum function func here
+		//console.log(rows);
+		return func(rows);
 	});
 }	
