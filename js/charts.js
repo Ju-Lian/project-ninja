@@ -34,7 +34,7 @@ function yAxis(config){
 		.attr("class","axis")
 		.attr("transform", "translate("+config.padding+",0)")
 		.call(yAxis);
-		
+	
 	return yScale;	
 	
 }
@@ -65,7 +65,7 @@ function bar(config){
 			values: [0,d3.max(helper)],
 			min: 0, 
 			max: d3.max(helper)});
-			
+	
 	function chart(){
 			
 		var g = config.svg.append("g").attr("id", config.name);
@@ -99,9 +99,7 @@ function bar(config){
 	};
 	
 	chart.remove = function() {
-	
 		rect.remove();
-	
 	}
 	
 	

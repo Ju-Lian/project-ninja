@@ -46,11 +46,20 @@
 					data: [{y: 30},{y: 100},{y: 200}]
 					});
 					
-			bar.update([{y: 150},{y: 130},{y: 140}]);
+			//bar.update([{y: 150},{y: 130},{y: 140}]);
 			
 			//bar.update([{y: 0},{y: 50},{y: 40}]);
-			bar.remove();
+			//bar.remove();
 			
 		</script>
+		<form action="select.htm">
+	  <p>Testen</p>
+	  <p>
+		<input type="button" name="Text 1" value="Remove" onclick="bar.remove()">
+	  </p>
+	  <p>
+		<input type="button" name="Text 1" value="Update" onclick="bar.update([{y: 150},{y: 130},{y: 140}])">
+	  </p>
+</form>
 	</body>
 </html>
