@@ -1,0 +1,40 @@
+body {
+  font: 11px sans-serif;
+}
+
+svg {
+	background: white;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.x.axis  text{
+	font: 11px sans-serif;
+	fill: black;
+}
+
+.x.axis path {
+  display: none;
+}
+
+.axis.label {
+	fill: grey;
+	font: 11px sans-serif;
+}
+
+.gridLine {
+	stroke: grey;
+	stroke-width: 1;	
+	shape-rendering: crispEdges;
+	stroke-dasharray: 2,3;
+}
+
+.bar {
+  fill: steelblue;
+}
+
