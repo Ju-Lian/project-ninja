@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<html>
+<head>
+	<title>Margin Volume Chart</title>
+	<link rel="stylesheet" type="text/css" href="../style/BPChart.css">
+</head>
+<body>
+	<!-- JEDOX KEY NSQ84-49X77-G5HOE-ZOU32 -->
+	<!--script src="../lib/d3.v3.min.js" charset="utf-8"></script--> 
+	<!--script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script-->	
+	<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+	<script src="../lib/jquery-2.0.3.min.js" charset="utf-8"></script>
+	<script src="../lib/BarChart.js"></script> 
+	<script src="../lib/CustomEvents.js"></script> 
+	
+	<script type="text/javascript" >	
+		var width = 600;
+		var height = 400;
+		var svg = d3.select("body").append("svg")
+				.attr("width", width)
+				.attr("height", height);	
+		var barChart;
+		var globalEventListener = new EventTarget;
+		
+		// Test data
+		var isData1=true;
+		var data1 =
+			[
+				{label: "Jan", x: 10, y: 10},
+				{label: "Feb", x: 20, y: 30},
+				{label: "Mar", x: 30, y: -10},
+				{label: "Apr", x: 40, y: 10},
+				{label: "May", x: 50, y: 26},
+				{label: "Jun", x: 60, y: -22},
+				{label: "Jul", x: 70, y: 21},
+				{label: "Aug", x: 80, y: 18},
+				{label: "Sep", x: 90, y: 10},
+				{label: "Oct", x: 100, y: 14},
+				{label: "Nov", x: 110, y: -6},
+				{label: "Dec", x: 120, y: 24}
+			];
+		var data2 =
+			[
+				{label: "Jan", x: 10, y: -10},
+				{label: "Feb", x: 20, y: 30},
+				{label: "Mar", x: 30, y: 10},
+				{label: "Apr", x: 40, y: -10},
+				{label: "May", x: 50, y: -26},
+				{label: "Jun", x: 60, y: 22},
+				{label: "Jul", x: 70, y: -21},
+				{label: "Aug", x: 80, y: -18},
+				{label: "Sep", x: 90, y: -10},
+				{label: "Oct", x: 100, y: -14},
+				{label: "Nov", x: 110, y: 6},
+				{label: "Dec", x: 120, y: -24}
+			];	
+		var data3 =
+			[
+				{label: "Jan", x: 10,y: 10},
+				{label: "Feb", x: 30, y: 20},
+				{label: "Mar", x: -10, y: 30},
+				{label: "Apr", x: 10, y: 40},
+				{label: "May", x: 26, y: 50},
+				{label: "Jun", x: -22, y: 60},
+				{label: "Jul", x: 21, y: 70},
+				{label: "Aug", x: 18, y: 80},
+				{label: "Sep", x: 11, y: 90},
+				{label: "Oct", x: 14, y: 100},
+				{label: "Nov", x: -6, y: 110},
+				{label: "Dec", x: 24, y: 120}
+			];
+		var data3 =
+			[
+				{label: "Jan", x: -10,y: 10},
+				{label: "Feb", x: -30, y: 20},
+				{label: "Mar", x: 10, y: 30},
+				{label: "Apr", x: -10, y: 40},
+				{label: "May", x: -26, y: 50},
+				{label: "Jun", x: 22, y: 60},
+				{label: "Jul", x: -21, y: 70},
+				{label: "Aug", x: -18, y: 80},
+				{label: "Sep", x: -11, y: 90},
+				{label: "Oct", x: -14, y: 100},
+				{label: "Nov", x: 6, y: 110},
+				{label: "Dec", x: -24, y: 120}
+			];				
+		//Test Data
+		
+		
+		function init(data) {
+			console.log(data);
+			barChart = new BarChart
+			({
+				svg: svg,
+				width: width,
+				height: height,
+				name: "barChart",
+				padding: 50,
+				rangeBandsInnerPadding: .5,
+				rangeBandsOuterPadding: 2,
+				transitionDuration: 800,
+				eventListener: globalEventListener,
+				xAxisLabel: "Months",
+				yAxisLabel: "Change in Mio",
+				data: data
+			});
+		}		
+		
+		function update(data) {
+			barChart.update(data);
+		}
+		
+		function updateButton() {
+			if(isData1)
+			{
+				update(data2);
+				isData1=false;
+			}
+			else
+			{
+				update(data1);
+				isData1=true;
+			}			
+		}
+		
+		function eventButton() {
+			globalEventListener.fire("testEvent");
+		}
+		
+		function handleEvent(event) {
+			if(event.type=="barChart.click") {
+				console.log("barChart clicked " + barChart.getSelected());
+			}
+		}
+		
+		//__exec in jedox
+		window.onload = function()
+		{		
+			init(data1);
+			globalEventListener.addListener("testEvent", handleEvent);
+			globalEventListener.addListener("barChart.click", handleEvent)
+		}
+	</script>
+<button type="button" onclick="updateButton()">Update</button>
+<button type="button" onclick="eventButton()">Event</button>
+</body>
+
+</html> 
