@@ -1,0 +1,99 @@
+<html>
+	<head>
+		<script src="../js/d3.v3.min.js"></script>
+		<script src="../js/chartlib.js"></script>
+		<script>
+			function test(sorter){
+				remove();
+				column
+				({
+					svg: svg,
+					width: width,
+					height: height,
+					sort: sorter,
+					data: [{
+								x: 20,
+								y: 130
+							},
+							{
+								x: 10,
+								y: 140
+							},
+							{
+								x: 30,
+								y: 70
+							},
+							{
+								x: 10,
+								y: 20
+							},
+							{
+								x: 50,
+								y: 30
+							}
+							]
+				});
+			}
+
+		</script>
+
+		<style>
+			.axis path,
+			.axis line {
+				fill: none;
+				stroke: black;
+				shape-rendering: crispEdges;
+			}
+
+			#xAxis .tick line{
+				opacity: 0;
+			}
+
+			.axis text {
+				font-family: sans-serif;
+				font-size: 11px;
+			}
+
+			.rect{
+				stroke: black;
+				fill: #ccc;
+
+			}
+			.rect:hover{
+				stroke: red;
+				fill: orange;
+
+			}
+
+		</style>
+	</head>
+
+	<body>
+		<script>
+			var width = 600,
+				height = 400;
+
+			var svg = d3.select("body").append("svg")
+				.attr("width", width)
+				.attr("height", height);	
+
+			test();
+
+			function remove(){
+				d3.select("svg").selectAll("g").remove();
+			}
+
+		</script>
+	<form action="select.htm">
+  <p>Chart sortieren:</p>
+  <p>
+    <select name="Sorter" size="5"
+        onchange="test(this.form.Sorter.options[this.form.Sorter.selectedIndex].value)">
+      <option value="x">Nach X Werten</option>
+      <option value="y">Nach Y Werten</option>
+      <option value="area">Nach Fläche</option>
+    </select>
+  </p>
+</form>
+	</body>
+</html>
