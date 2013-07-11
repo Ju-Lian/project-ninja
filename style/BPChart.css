@@ -1,0 +1,100 @@
+body {
+  font: 11px sans-serif;
+}
+
+svg {
+	background: white;
+}
+
+/* AXIS */
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.x.axis  text{
+	font: 11px sans-serif;
+	fill: black;
+}
+
+.x.axis path {
+  display: none;
+}
+
+.axis.label {
+	fill: grey;
+	font: 11px sans-serif;
+}
+
+.y.waterfall.axis path {
+	  display: none;
+}
+
+.customAxisLine {
+	/* custom x axis */
+	fill: black;
+	stroke: black;
+	stroke-width: 1;	
+	shape-rendering: crispEdges;
+	/*stroke-dasharray: 2,3;*/
+}
+
+/* DATALABELS */
+
+.dataLabels text {
+	font-size: 11px;
+	font-family: sans-serif;
+	font-weight: normal;
+	fill: black;
+	text-anchor: center;	
+}
+
+.connectingLine line{
+	stroke: black;
+	stroke-width: 1;
+	stroke-dasharray: 2;
+	shape-rendering: crispEdges;	
+}
+
+/* CHART TITLE */
+
+.title {
+	fill: black;
+	font: 14px sans-serif;
+	text-anchor: left;
+	font-weight: bold;
+}
+
+/* BARS */
+
+.bar {
+	shape-rendering: crispEdges;
+}
+
+.barPositive {
+ 	fill: rgb(0,153,0);
+}
+
+.barNegative {
+	fill: rgb(255,102,0);
+}
+
+.barSelected {
+	fill: blue;
+	/* opacity is hardcoded */
+}
+
+.barsOverlay {
+	fill: yellow;
+	/* opacity is hardcoded */
+}
+
+.barsOverlaySelected {
+	fill:grey;
+}
+
+
+

@@ -2,13 +2,13 @@
 <meta charset="utf-8">
 <html>
 <head>
-	<title>Bar Chart</title>
+	<title>Waterfall</title>
 	<link rel="stylesheet" type="text/css" href="../style/BPChart.css">
 </head>
 <body>
 	<script src="../js/d3.v3.min.js" charset="utf-8"></script> 
 	<script src="../js/jquery-2.0.3.min.js" charset="utf-8"></script>
-	<script src="../js/BarChart.js"></script> 
+	<script src="../js/Waterfall.js"></script> 
 	<script src="../js/CustomEvents.js"></script> 
 	
 	<script type="text/javascript" >	
@@ -17,7 +17,7 @@
 		var svg = d3.select("body").append("svg")
 				.attr("width", width)
 				.attr("height", height);	
-		var barChart;
+		var waterfallChart;
 		var globalEventListener = new EventTarget;
 		
 		// Test data
@@ -56,10 +56,10 @@
 			[
 				{label: "Jan", x: 10,y: 10},
 				{label: "Feb", x: 30, y: 20},
-				{label: "Mar", x: -10, y: 30},
+				{label: "Mar", x: -47, y: 30},
 				{label: "Apr", x: 10, y: 40},
 				{label: "May", x: 26, y: 50},
-				{label: "Jun", x: -22, y: 60},
+				{label: "Jun", x: -62, y: 60},
 				{label: "Jul", x: 21, y: 70},
 				{label: "Aug", x: 18, y: 80},
 				{label: "Sep", x: 11, y: 90},
@@ -67,14 +67,14 @@
 				{label: "Nov", x: -6, y: 110},
 				{label: "Dec", x: 24, y: 120}
 			];
-		var data3 =
+		var data4 =
 			[
 				{label: "Jan", x: -10,y: 10},
 				{label: "Feb", x: -30, y: 20},
 				{label: "Mar", x: 10, y: 30},
 				{label: "Apr", x: -10, y: 40},
 				{label: "May", x: -26, y: 50},
-				{label: "Jun", x: 22, y: 60},
+				{label: "Jun", x: 0, y: 60},
 				{label: "Jul", x: -21, y: 70},
 				{label: "Aug", x: -18, y: 80},
 				{label: "Sep", x: -11, y: 90},
@@ -86,38 +86,38 @@
 		
 		
 		function init(data) {
-			console.log(data);
-			barChart = new BarChart
+			waterfallChart = new Waterfall
 			({
 				svg: svg,
 				width: width,
 				height: height,
-				name: "barChart",
+				name: "waterfallChart",
+				title: "Waterfall Show Case",
 				padding: 50,
-				rangeBandsInnerPadding: .5,
+				rangeBandsInnerPadding: .4,
 				rangeBandsOuterPadding: 2,
-				rangeBandsTopPadding: 12,
+				rangeBandsTopPadding: 35,
 				transitionDuration: 800,
 				eventListener: globalEventListener,
-				xAxisLabel: "Months",
-				yAxisLabel: "Change in Mio",
+				xAxisLabel: "Change in Mio",
+				yAxisLabel: "Months",
 				data: data
 			});
 		}		
 		
 		function update(data) {
-			barChart.update(data);
+			waterfallChart.update(data);
 		}
 		
 		function updateButton() {
 			if(isData1)
 			{
-				update(data2);
+				update(data4);
 				isData1=false;
 			}
 			else
 			{
-				update(data1);
+				update(data3);
 				isData1=true;
 			}			
 		}
@@ -130,14 +130,18 @@
 			if(event.type=="barChart.click") {
 				console.log("barChart clicked " + barChart.getSelected());
 			}
+			if(event.type=="waterfallChart.click") {
+				console.log("waterfallChart clicked " + waterfallChart.getSelected());
+			}
 		}
 		
 		//__exec in jedox
 		window.onload = function()
 		{		
-			init(data1);
+			init(data3);
 			globalEventListener.addListener("testEvent", handleEvent);
-			globalEventListener.addListener("barChart.click", handleEvent)
+			globalEventListener.addListener("barChart.click", handleEvent);
+			globalEventListener.addListener("waterfallChart.click", handleEvent)
 		}
 	</script>
 <button type="button" onclick="updateButton()">Update</button>
