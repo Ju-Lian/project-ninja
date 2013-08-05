@@ -106,7 +106,7 @@ function BarChart(obj)
 			})
 			.attr("height", function(d){return Math.abs(yScale(0)-yScale(d));})
 			.each("end", function(d,i) {
-				d3.select("#dataLabel"+i)
+				d3.select("#"+obj.name+"_dataLabel"+i)
 					.text(d.toFixed(1))
 					.attr("x", d3.select(this).attr("x") - (d.toFixed(1).toString().length)/2)
 					.attr("y", (d>=0) ? 
@@ -249,7 +249,7 @@ function BarChart(obj)
 			.data(data.map(function(d){return d.x;}))
 			.enter().append("rect")
 			.attr("class","bar")
-			.attr("id", function(d,i) {return "bar"+i;})
+			.attr("id", function(d,i) {return obj.name+"_bar"+i;})
 			.attr("x", function(d,i) {
 				return xScale(i);
 			})
@@ -262,7 +262,7 @@ function BarChart(obj)
 			.data(data.map(function(d){return d.x;}))
 			.enter().append("rect")
 			.attr("class","barsOverlay")
-			.attr("id", function(d,i) {return "barsOverlay"+i;})
+			.attr("id", function(d,i) {return obj.name+"_barsOverlay"+i;})
 			.attr("x", function(d,i) {
 				return xScale(i);
 			})
@@ -297,8 +297,8 @@ function BarChart(obj)
 		for(var i = 0; i<data.length; i++) {
 			dataLabelsGroup.append("text")	
 				.text("NaN")
-				.attr("id", function() {return "dataLabel"+i;})
-				.attr("x", Number(d3.select("#bar"+i).attr("x")))
+				.attr("id", function() {return obj.name+"_dataLabel"+i;})
+				.attr("x", Number(d3.select("#"+obj.name+"_bar"+i).attr("x")))
 				.attr("y", yScale(0));
 		}
 		
@@ -329,13 +329,13 @@ function BarChart(obj)
 	/** Select hovered bar */
 	var selectBar = function(idx) {
 		selected=idx;
-		d3.select("#barsOverlay"+idx).attr("class", "barsOverlaySelected");	
+		d3.select("#"+obj.name+"_barsOverlay"+idx).attr("class", "barsOverlaySelected");	
 	}
 	
 	/** Deselect selected bar */
 	var deselectBar = function(idx) {
 		selected=-1;
-		d3.select("#barsOverlay"+idx).attr("class", "barsOverlay");		
+		d3.select("#"+obj.name+"_barsOverlay"+idx).attr("class", "barsOverlay");		
 	}
 	
 	/** Deselect selected bar and select bar with index idx*/
@@ -343,8 +343,8 @@ function BarChart(obj)
 		//NOTE: when deselecting a bar which is not the current, 
 		//opacity values have to be set explicitely because they inherit it
 		//from the former class, which of course intransparent due to former selection	
-		d3.select("#barsOverlay"+selected).attr("class", "barsOverlay");	
-		d3.select("#barsOverlay"+selected).attr("opacity", 0); //explicit
+		d3.select("#"+obj.name+"_barsOverlay"+selected).attr("class", "barsOverlay");	
+		d3.select("#"+obj.name+"_barsOverlay"+selected).attr("opacity", 0); //explicit
 		//and select this
 		selectBar(idx);	
 	}

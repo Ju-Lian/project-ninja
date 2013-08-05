@@ -140,16 +140,16 @@ function Waterfall(obj)
 				//connecting Lines
 				if(i<dataset.length-1) {
 					var tmpX = (d>=0) ?
-						 Number(d3.select("#bar"+i).attr("x")) + Number(d3.select("#bar"+i).attr("width"))
-						: Number(d3.select("#bar"+i).attr("x"));	
+						 Number(d3.select("#"+obj.name+"_bar"+i).attr("x")) + Number(d3.select("#"+obj.name+"_bar"+i).attr("width"))
+						: Number(d3.select("#"+obj.name+"_bar"+i).attr("x"));	
 						
-					d3.select("#connectingLine"+i)
+					d3.select("#"+obj.name+"_connectingLine"+i)
 						.attr("x1", tmpX)
 						.attr("x2", tmpX)
 						.attr("opacity", 1);	
 				}
 				//data labels
-				d3.select("#dataLabel"+i)
+				d3.select("#"+obj.name+"_dataLabel"+i)
 					.text(d.toFixed(1))
 					.attr("x", (d>=0) ? 
 						Number(d3.select(this).attr("x")) + Number(d3.select(this).attr("width")) + 2
@@ -308,46 +308,45 @@ function Waterfall(obj)
 		yLine = chart.append("line")
 			.attr("class", "customAxisLine")
 			.attr("x1", xScale(0))
-			.attr("y1", obj.padding)
+			.attr("y1", yScale(0))
 			.attr("x2", xScale(0))
-			.attr("y2", obj.height-obj.padding);		
+			.attr("y2", obj.height-yScale(0));		
 		
 		//initial bars (invisible)
 		bars=chart.selectAll("rect")
 			.data(objData.map(function(d){return d.y;}))
 			.enter().append("rect")
 			.attr("class","bar")
-			.attr("id", function(d,i) {return "bar"+i;})
+			.attr("id", function(d,i) {return obj.name+"_bar"+i;})
 			.attr("x",xScale(0))
 			.attr("y", function(d,i) {
 				return yScale(i);
 			})
 			.attr("width", 0)
 			.attr("height", 0);
-		
 		//Connecting lines between data bars
 		connectingLines = chart.append("g").attr("class", "connectingLine");				
 		var dataset=objData.map(function(d){return d.x;});
 		for(var i=0; i<dataset.length-1; i++) 
 		{
 			connectingLines.append("line")
-				.attr("id", function() {return "connectingLine"+i;})
+				.attr("id", function() {return obj.name+"_connectingLine"+i;})
 				.attr("x1", function(d) {
 					if(d>=0) 
 					{
-						return Number(d3.select("#bar"+i).attr("x")) + Number(d3.select("#bar"+i).attr("width"));
+						return Number(d3.select("#"+obj.name+"_bar"+i).attr("x")) + Number(d3.select("#"+obj.name+"_bar"+i).attr("width"));
 					}
-					else return Number(d3.select("#bar"+i).attr("x"));
+					else return Number(d3.select("#"+obj.name+"_bar"+i).attr("x"));
 				})
 				.attr("y1", function() {
-					return Number(d3.select("#bar"+i).attr("y")) + yScale.rangeBand(); 
+					return Number(d3.select("#"+obj.name+"_bar"+i).attr("y")) + yScale.rangeBand(); 
 				})
 				.attr("x2", function(d) { 
-					if(d>=0) return Number(d3.select("#bar"+i).attr("x")) + Number(d3.select("#bar"+i).attr("width"));
-					else return Number(d3.select("#bar"+i).attr("x"));			
+					if(d>=0) return Number(d3.select("#"+obj.name+"_bar"+i).attr("x")) + Number(d3.select("#"+obj.name+"_bar"+i).attr("width"));
+					else return Number(d3.select("#"+obj.name+"_bar"+i).attr("x"));			
 				})
 				.attr("y2", function() {
-					return d3.select("#bar"+(i+1)).attr("y"); 
+					return d3.select("#"+obj.name+"_bar"+(i+1)).attr("y"); 
 				});
 		}//for loop connectingLines
 		
@@ -356,7 +355,7 @@ function Waterfall(obj)
 			.data(objData.map(function(d){return d.x;}))
 			.enter().append("rect")
 			.attr("class","barsOverlay")
-			.attr("id", function(d,i) {return "barsOverlay"+i;})
+			.attr("id", function(d,i) {return obj.name+"_barsOverlay"+i;})
 			.attr("x", function(d,i) {
 				return xScale(xMin);
 			})
@@ -385,9 +384,9 @@ function Waterfall(obj)
 		{
 			dataLabelsGroup.append("text")	
 				.text("NaN")
-				.attr("id", function() {return "dataLabel"+i;})
+				.attr("id", function() {return obj.name+"_dataLabel"+i;})
 				.attr("x", xScale(0))
-				.attr("y", Number(d3.select("#bar"+i).attr("y")) + yScale.rangeBand()/2 + fontSize/2);
+				.attr("y", Number(d3.select("#"+obj.name+"_bar"+i).attr("y")) + yScale.rangeBand()/2 + fontSize/2);
 		}		
 		
 		//call transitions to draw bars etc.
@@ -417,13 +416,13 @@ function Waterfall(obj)
 	/** Select hovered bar */
 	var selectBar = function(idx) {
 		selected=idx;
-		d3.select("#barsOverlay"+idx).attr("class", "barsOverlaySelected");	
+		d3.select("#"+obj.name+"_barsOverlay"+idx).attr("class", "barsOverlaySelected");	
 	}
 	
 	/** Deselect selected bar */
 	var deselectBar = function(idx) {
 		selected=-1;
-		d3.select("#barsOverlay"+idx).attr("class", "barsOverlay");		
+		d3.select("#"+obj.name+"_barsOverlay"+idx).attr("class", "barsOverlay");		
 	}
 	
 	/** Deselect selected bar and select bar with index idx*/
@@ -431,8 +430,8 @@ function Waterfall(obj)
 		//NOTE: when deselecting a bar which is not the current, 
 		//opacity values have to be set explicitely because they inherit it
 		//from the former class, which of course intransparent due to former selection	
-		d3.select("#barsOverlay"+selected).attr("class", "barsOverlay");	
-		d3.select("#barsOverlay"+selected).attr("opacity", 0); //explicit
+		d3.select("#"+obj.name+"_barsOverlay"+selected).attr("class", "barsOverlay");	
+		d3.select("#"+obj.name+"_barsOverlay"+selected).attr("opacity", 0); //explicit
 		//and select this
 		selectBar(idx);	
 	}
